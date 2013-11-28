@@ -462,34 +462,12 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     ntfs_dir_state* dir = STATE(dirState);
     s64 position = 0;
 
-    // Get the volume descriptor for this path (new from Estwald)
-
-    ntfs_vd *vd  = ntfsGetVolume(path);
-
-    if (!vd) {
-        r->_errno = ENODEV;
-        return NULL;
-    }
-
-    dir->vd = malloc(sizeof(ntfs_vd));
-
-    if (!dir->vd) {
-        r->_errno = ENODEV;
-        return NULL;
-    }
-
-    memcpy(dir->vd, vd, sizeof(ntfs_vd));
-    dir->vd->firstOpenDir = NULL;
-    dir->vd->openDirCount = 0;
-
-/*
     // Get the volume descriptor for this path
     dir->vd = ntfsGetVolume(path);
     if (!dir->vd) {
         r->_errno = ENODEV;
         return NULL;
     }
-    */
 
     // Lock
     ntfsLock(dir->vd);
@@ -635,7 +613,7 @@ int ntfs_dirnext_r (struct _reent *r, DIR_ITER *dirState, char *filename, struct
 
     // Update directory times
     ntfsUpdateTimes(dir->vd, dir->ni, NTFS_UPDATE_ATIME);
-
+    ntfsUnlock(dir->vd);
     return 0;
 }
 
@@ -670,8 +648,6 @@ int ntfs_dirclose_r (struct _reent *r, DIR_ITER *dirState)
 
     // Unlock
     ntfsUnlock(dir->vd);
-
-    ntfs_free(dir->vd); // added by Estwald
 
     return 0;
 }

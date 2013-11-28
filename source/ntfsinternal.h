@@ -40,9 +40,13 @@
 #include "efs.h"
 #include "unistr.h"
 
+// #define NTFS_USE_LWMUTEX
+
+// #define NTFS_LOCK_DEBUG
+
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
-#include <lv2/mutex.h>
+#include <sys/thread.h>
 #include "ntfs.h"
 #include "iosupport.h"
 
@@ -122,7 +126,14 @@ typedef enum {
 typedef struct _ntfs_vd {
     struct ntfs_device *dev;                /* NTFS device handle */
     ntfs_volume *vol;                       /* NTFS volume handle */
+#ifdef NTFS_USE_LWMUTEX
     sys_lwmutex_t lock;                     /* Volume lock mutex */
+#else
+    sys_mutex_t lock;                       /* Volume lock mutex */
+#endif
+#ifdef NTFS_LOCK_DEBUG
+  int lockdepth;
+#endif
     s64 id;                                 /* Filesystem id */
     u32 flags;                              /* Mount flags */
     char name[128];                         /* Volume name (cached) */
@@ -140,19 +151,68 @@ typedef struct _ntfs_vd {
     u16 openFileCount;                      /* The total number of files currently open in this volume */
 } ntfs_vd;
 
+extern void panic(const char *fmt, ...);
+extern void mutex_dump_info(sys_mutex_t lock);
+
+extern void trace(int flags, int level, const char *subsys, const char *fmt, ...);
+
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
 {
-   // PS3_LOCK LWP_MutexLock(vd->lock);
-   sysLwMutexLock(&vd->lock, 0);
+#ifdef NTFS_LOCK_DEBUG
 
+  sys_ppu_thread_t t;
+  sys_ppu_thread_get_id(&t);
+
+  trace(0, 2, "NTFS", "0x%x: Locking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+
+#endif
+#ifdef NTFS_USE_LWMUTEX
+  int r = sys_lwmutex_lock(&vd->lock, 0);
+  if(r) {
+    panic("unable to lock volume %p mutex:0x%016llx error:%x",
+	  vd, vd->lock.lock_var, r);
+  }
+#else
+
+#ifdef NTFS_LOCK_DEBUG
+
+  while(1) {
+    int r = sys_mutex_lock(vd->lock, 1000000);
+    if(r) {
+      mutex_dump_info(vd->lock);
+      continue;
+    }
+    break;
+  }
+#endif
+
+  sys_mutex_lock(vd->lock, 0);
+
+#endif
+#ifdef NTFS_LOCK_DEBUG
+  vd->lockdepth++;
+  trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+#endif
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
-    // PS3_LOCK LWP_MutexUnlock(vd->lock);
-    sysLwMutexUnlock(&vd->lock);
+#ifdef NTFS_LOCK_DEBUG
+  sys_ppu_thread_t t;
+  sys_ppu_thread_get_id(&t);
+
+  vd->lockdepth--;
+  trace(0, 2, "NTFS", "0x%x: Unlocking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+#endif
+#ifdef NTFS_USE_LWMUTEX
+  int r = sys_lwmutex_unlock(&vd->lock);
+#else
+  int r = sys_mutex_unlock(vd->lock);
+#endif
+  if(r)
+    panic("Failed to unlock mutex: %x", r);
 }
 
 /* Gekko device related routines */

@@ -51,7 +51,8 @@
 #else /* GEKKO */
 #endif
 
-#include <ppu-lv2.h>
+#include <psl1ght/lv2.h>
+
 #if 0
 typedef uint8_t  u8;			/* Unsigned types of an exact size */
 typedef uint16_t u16;

@@ -30,7 +30,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ppu-lv2.h>
+#include <psl1ght/lv2.h>
 #include <stdio.h>
 
 #include <fcntl.h> // file flags

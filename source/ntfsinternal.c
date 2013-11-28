@@ -128,7 +128,10 @@ void ntfsRemoveDevice (const char *path)
 
     // Get the device name from the path
     strncpy(name, path, 127);
-    strtok(name, ":/");
+    char *s = strstr(name, ":/");
+    if(s == NULL)
+	return;
+    *s = 0;
 
     // Find and remove the specified device from the devoptab table
     // NOTE: We do this manually due to a 'bug' in RemoveDevice
@@ -156,7 +159,10 @@ const devoptab_t *ntfsGetDevice (const char *path, bool useDefaultDevice)
 
     // Get the device name from the path
     strncpy(name, path, 127);
-    strtok(name, ":/");
+    char *s = strstr(name, ":/");
+    if(s == NULL)
+	return NULL;
+    *s = 0;
 
     // Search the devoptab table for the specified device name
     // NOTE: We do this manually due to a 'bug' in GetDeviceOpTab
@@ -175,7 +181,7 @@ const devoptab_t *ntfsGetDevice (const char *path, bool useDefaultDevice)
     // chances are that this path has no device name in it.
     // Call GetDeviceOpTab to get our default device (chdir).
     if (useDefaultDevice) {
-    
+	panic("NTFS: Using default device");
         for (i = 0; i < STD_MAX; i++) {
         devoptab = devoptab_list[i];
         if (devoptab && devoptab->name) {
@@ -201,9 +207,9 @@ ntfs_vd *ntfsGetVolume (const char *path)
     // Get the volume descriptor from the paths associated devoptab (if found)
     const devoptab_t *devoptab_ntfs = ntfsGetDevOpTab();
     const devoptab_t *devoptab = ntfsGetDevice(path, true);
-    if (devoptab && devoptab_ntfs && (devoptab->open_r == devoptab_ntfs->open_r))
+    if (devoptab && devoptab_ntfs && (devoptab->open_r == devoptab_ntfs->open_r)) {
         return (ntfs_vd*)devoptab->deviceData;
-
+    }
     return NULL;
 }
 
@@ -218,12 +224,26 @@ int ntfsInitVolume (ntfs_vd *vd)
     // Initialise the volume lock
     //PS3_LOCK LWP_MutexInit(&vd->lock, false);
 
-    static const sys_lwmutex_attr_t attr = {
-	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
+#ifdef NTFS_USE_LWMUTEX
+    static const sys_lwmutex_attribute_t attr = {
+	MUTEX_PROTOCOL_PRIORITY,MUTEX_RECURSIVE,
     };
 
-    sysLwMutexCreate(&vd->lock, &attr);
+    sys_lwmutex_create(&vd->lock, &attr);
+#else
+  sys_mutex_attribute_t attr;
+  memset(&attr, 0, sizeof(attr));
+  attr.attr_protocol = MUTEX_PROTOCOL_PRIORITY;
+  attr.attr_recursive = MUTEX_RECURSIVE;
+  attr.attr_pshared  = 0x00200;
+  attr.attr_adaptive = 0x02000;
+  strcpy(attr.name, "ntfs");
+  sys_mutex_create(&vd->lock, &attr);
+#endif
 
+#ifdef NTFS_LOCK_DEBUG
+  vd->lockdepth = 0;
+#endif
     // Reset the volumes name cache
     vd->name[0] = '\0';
 
@@ -286,8 +306,12 @@ void ntfsDeinitVolume (ntfs_vd *vd)
 
     // Deinitialise the volume lock
     //PS3_LOCK LWP_MutexDestroy(vd->lock);
+#ifdef NTFS_USE_LWMUTEX
+    sys_lwmutex_destroy(&vd->lock);
+#else
+    sys_mutex_destroy(vd->lock);
 
-    sysLwMutexDestroy(&vd->lock);
+#endif
 
     return;
 }

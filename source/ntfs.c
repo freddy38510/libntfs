@@ -40,6 +40,8 @@
 #include "gekko_io.h"
 #include "cache.h"
 
+// #define WITH_EXT_SUPPORT
+
 // libext
 #define PARTITION_TYPE_LINUX                0x83 /* EXT2/3/4 */
 
@@ -96,7 +98,9 @@ void ntfsInit (void)
     return;
 }
 
+#ifdef WITH_EXT_SUPPORT
 int partition_type[NTFS_MAX_PARTITIONS] = {0};
+#endif
 
 int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
 {
@@ -104,10 +108,11 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
     PARTITION_RECORD *partition = NULL;
     sec_t partition_starts[NTFS_MAX_PARTITIONS] = {0};
     
+#ifdef WITH_EXT_SUPPORT
     int n;
     for (n = 0; n < NTFS_MAX_PARTITIONS; n++)
         partition_type[n] = 0;
-    
+#endif
     int partition_count = 0;
     sec_t part_lba = 0;
     int i;
@@ -150,7 +155,9 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
     }
 
     // Super is always at offset SUPERBLOCK_OFFSET
+#ifdef WITH_EXT_SUPPORT
     struct ext2_super_block	* super = (struct ext2_super_block	*) (buffer + SUPERBLOCK_OFFSET);	//1024 bytes
+#endif
 
     // Read the first sector on the device
     if (!interface->readSectors(0, 1, &sector.buffer)) {
@@ -179,6 +186,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                 // Ignore empty partitions
                 case PARTITION_TYPE_EMPTY:
                     continue;
+#ifdef WITH_EXT_SUPPORT
                 case PARTITION_TYPE_LINUX:
                     // Read and validate the EXT partition
                     if (interface->readSectors(part_lba, 4, buffer))
@@ -194,6 +202,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                     }    
                 //
                 break;
+#endif
 
                 // NTFS partition
                 case PARTITION_TYPE_NTFS: {
@@ -205,7 +214,9 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                             ntfs_log_debug("Partition %i: Valid NTFS boot sector found\n", i + 1);
                             if (partition_count < NTFS_MAX_PARTITIONS) {
                                 partition_starts[partition_count] = part_lba;
+#ifdef WITH_EXT_SUPPORT
                                 partition_type[partition_count] = 0; // ntfs
+#endif
                                 partition_count++;
                             }
                         } else {
@@ -243,6 +254,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                                 {
                                     memcpy(&sector, buffer, MAX_SECTOR_SIZE);
                                 // check and validate the EXT partition
+#ifdef WITH_EXT_SUPPORT
                                     if (ext2fs_le16_to_cpu(super->s_magic) == EXT2_SUPER_MAGIC)
                                     {
                                         if (partition_count < NTFS_MAX_PARTITIONS) {
@@ -252,7 +264,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                                         }
 
                                     } else
-                                    
+#endif                                    
                                 // Check if this partition has a valid NTFS boot record
                               
                                     if (sector.boot.oem_id == NTFS_OEM_ID) {
@@ -262,7 +274,9 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                                         }
                                         if (partition_count < NTFS_MAX_PARTITIONS) {
                                             partition_starts[partition_count] = part_lba;
+#ifdef WITH_EXT_SUPPORT
                                             partition_type[partition_count] = 0; // ntfs
+#endif
                                             partition_count++;
                                         }
                                     }
@@ -286,6 +300,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                     if (interface->readSectors(part_lba, 4, buffer)) {
                         memcpy(&sector, buffer, MAX_SECTOR_SIZE);
                     // check and validate the EXT partition
+#ifdef WITH_EXT_SUPPORT
                         if (ext2fs_le16_to_cpu(super->s_magic) == EXT2_SUPER_MAGIC) {
                             if (partition_count < NTFS_MAX_PARTITIONS) {
                                 partition_starts[partition_count] = part_lba;
@@ -293,6 +308,7 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                                 partition_count++;
                             }
                         } else
+#endif
                         // Check if this partition has a valid NTFS boot record anyway,
                     // it might be misrepresented due to a lazy partition editor
 
@@ -303,7 +319,9 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                             }
                             if (partition_count < NTFS_MAX_PARTITIONS) {
                                 partition_starts[partition_count] = part_lba;
+#ifdef WITH_EXT_SUPPORT
                                 partition_type[partition_count] = 0;
+#endif
                                 partition_count++;
                             }
                         }
@@ -328,7 +346,9 @@ int ntfsFindPartitions (const DISC_INTERFACE *interface, sec_t **partitions)
                     ntfs_log_debug("Valid NTFS boot sector found at sector %d!\n", i);
                     if (partition_count < NTFS_MAX_PARTITIONS) {
                         partition_starts[partition_count] = i;
+#ifdef WITH_EXT_SUPPORT
                         partition_type[partition_count] = 0;
+#endif
                         partition_count++;
                     }
                 }
@@ -393,13 +413,18 @@ int ntfsMountAll (ntfs_md **mounts, u32 flags)
                 // Mount the partition
                 if (mount_count < NTFS_MAX_MOUNTS) {
                     // ntfs
-                    if (!partition_type[j] && ntfsMount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, flags)) {
+                    if (
+#ifdef WITH_EXT_SUPPORT
+			!partition_type[j] &&
+#endif
+			ntfsMount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, flags)) {
                         strcpy(mount_points[mount_count].name, name);
                         mount_points[mount_count].interface = disc->interface;
                         mount_points[mount_count].startSector = partitions[j];
                         mount_count++;
                     }
 
+#ifdef WITH_EXT_SUPPORT
                     // ext
                     if (partition_type[j] && ext2Mount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, EXTFLAGS)) {
                         strcpy(mount_points[mount_count].name, name);
@@ -407,6 +432,7 @@ int ntfsMountAll (ntfs_md **mounts, u32 flags)
                         mount_points[mount_count].startSector = partitions[j];
                         mount_count++;
                     }
+#endif
                 }
 
             }
@@ -459,9 +485,13 @@ int ntfsMountDevice (const DISC_INTERFACE *interface, ntfs_md **mounts, u32 flag
                     
                     do {
                     
-                        if(!partition_type[j]) sprintf(name, "%s%i", NTFS_MOUNT_PREFIX, k++);
+#ifdef WITH_EXT_SUPPORT
+                        if(!partition_type[j])
+#endif
+			    sprintf(name, "%s%i", NTFS_MOUNT_PREFIX, k++);
+#ifdef WITH_EXT_SUPPORT
                         else sprintf(name, "ext%i", k++);
-
+#endif
                         if (k >= NTFS_MAX_MOUNTS) {
                             ntfs_free(partitions);
                             errno = EADDRNOTAVAIL;
@@ -474,13 +504,18 @@ int ntfsMountDevice (const DISC_INTERFACE *interface, ntfs_md **mounts, u32 flag
                     if (mount_count < NTFS_MAX_MOUNTS) {
                         // NTFS
 
-                        if (!partition_type[j] && ntfsMount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, flags)) {
+                        if (
+#ifdef WITH_EXT_SUPPORT
+			    !partition_type[j] &&
+#endif
+			    ntfsMount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, flags)) {
                             strcpy(mount_points[mount_count].name, name);
                             mount_points[mount_count].interface = disc->interface;
                             mount_points[mount_count].startSector = partitions[j];
                             mount_count++;
                         }
 
+#ifdef WITH_EXT_SUPPORT
                      // ext
                         if (partition_type[j] && ext2Mount(name, disc->interface, partitions[j], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, EXTFLAGS)) {
                             strcpy(mount_points[mount_count].name, name);
@@ -488,6 +523,7 @@ int ntfsMountDevice (const DISC_INTERFACE *interface, ntfs_md **mounts, u32 flag
                             mount_points[mount_count].startSector = partitions[j];
                             mount_count++;
                         }
+#endif
                     }
 
                 }
@@ -641,8 +677,9 @@ void ntfsUnmount (const char *name, bool force)
 {
     ntfs_vd *vd = NULL;
 
+#ifdef WITH_EXT_SUPPORT
     if(!strncmp(name, "ext", 3)) return ext2Unmount(name);
-
+#endif
     // Get the devices volume descriptor
     vd = ntfsGetVolume(name);
     if (!vd)
@@ -678,7 +715,11 @@ const char *ntfsGetVolumeName (const char *name)
     // Get the devices volume descriptor
     vd = ntfsGetVolume(name);
     if (!vd) {
+#ifdef WITH_EXT_SUPPORT
         const char *name2 = ext2GetVolumeName(name);
+#else
+	const char *name2 = NULL;
+#endif
         if (!name2) {
             errno = ENODEV;
             return NULL;
