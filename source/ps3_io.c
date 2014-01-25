@@ -600,7 +600,7 @@ static int get_dev2(const char *name)
       
     }
 
-    return 1;
+    return -1;
 }
 
 #if 1
@@ -871,7 +871,12 @@ int ps3ntfs_stat(const char *file, struct stat *st)
 
     if(file[0]=='/') file++;
 
-    return devoptab_list[get_dev2(file)]->stat_r(&reent1, file, st);
+    const int dev = get_dev2(file);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+    return devoptab_list[dev]->stat_r(&reent1, file, st);
 
 }
 
@@ -892,7 +897,13 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
     if(existing[0]=='/') existing++;
     if(newLink[0]=='/') newLink++;
 
-    return devoptab_list[get_dev2(newLink)]->link_r(&reent1, existing, newLink);
+    const int dev = get_dev2(newlink);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->link_r(&reent1, existing, newLink);
 
 }
 
@@ -919,7 +930,13 @@ int ps3ntfs_unlink(const char *name)
 
     if(name[0]=='/') name++;
 
-    return devoptab_list[get_dev2(name)]->unlink_r(&reent1, name);
+    const int dev = get_dev2(name);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->unlink_r(&reent1, name);
 
 }
 
@@ -938,7 +955,13 @@ int ps3ntfs_chdir(const char *name)
 
     if(name[0]=='/') name++;
 
-    return devoptab_list[get_dev2(name)]->chdir_r(&reent1, name);
+    const int dev = get_dev2(name);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->chdir_r(&reent1, name);
     #endif
     return -1;
 
