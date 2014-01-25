@@ -984,7 +984,13 @@ int ps3ntfs_rename(const char *oldName, const char *newName)
     if(oldName[0]=='/') oldName++;
     if(newName[0]=='/') newName++;
 
-    return devoptab_list[get_dev2(newName)]->rename_r(&reent1, oldName, newName);
+    const int dev = get_dev2(newName);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->rename_r(&reent1, oldName, newName);
 
 }
 
@@ -1004,7 +1010,13 @@ int ps3ntfs_mkdir(const char *path, int mode)
 
     if(path[0]=='/') path++;
 
-    return devoptab_list[get_dev2(path)]->mkdir_r(&reent1, path, mode);
+    const int dev = get_dev2(path);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->mkdir_r(&reent1, path, mode);
 
 }
 
@@ -1202,7 +1214,13 @@ int ps3ntfs_statvfs(const char *path, struct statvfs *buf)
 
     if(path[0]=='/') path++;
   
-    return devoptab_list[get_dev2(path)]->statvfs_r(&reent1, path, buf);
+    const int dev = get_dev2(name);
+    if(dev = -1) {
+        reent1._errno = ENOENT;
+        return -1;
+    }
+
+    return devoptab_list[dev]->statvfs_r(&reent1, path, buf);
 
 }
 
