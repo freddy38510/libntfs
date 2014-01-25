@@ -872,7 +872,7 @@ int ps3ntfs_stat(const char *file, struct stat *st)
     if(file[0]=='/') file++;
 
     const int dev = get_dev2(file);
-    if(dev = -1) {
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -897,8 +897,8 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
     if(existing[0]=='/') existing++;
     if(newLink[0]=='/') newLink++;
 
-    const int dev = get_dev2(newlink);
-    if(dev = -1) {
+    const int dev = get_dev2(newLink);
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -931,7 +931,7 @@ int ps3ntfs_unlink(const char *name)
     if(name[0]=='/') name++;
 
     const int dev = get_dev2(name);
-    if(dev = -1) {
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -956,7 +956,7 @@ int ps3ntfs_chdir(const char *name)
     if(name[0]=='/') name++;
 
     const int dev = get_dev2(name);
-    if(dev = -1) {
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -985,7 +985,7 @@ int ps3ntfs_rename(const char *oldName, const char *newName)
     if(newName[0]=='/') newName++;
 
     const int dev = get_dev2(newName);
-    if(dev = -1) {
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -1011,7 +1011,7 @@ int ps3ntfs_mkdir(const char *path, int mode)
     if(path[0]=='/') path++;
 
     const int dev = get_dev2(path);
-    if(dev = -1) {
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
@@ -1214,8 +1214,8 @@ int ps3ntfs_statvfs(const char *path, struct statvfs *buf)
 
     if(path[0]=='/') path++;
   
-    const int dev = get_dev2(name);
-    if(dev = -1) {
+    const int dev = get_dev2(path);
+    if(dev == -1) {
         reent1._errno = ENOENT;
         return -1;
     }
