@@ -160,9 +160,8 @@ const devoptab_t *ntfsGetDevice (const char *path, bool useDefaultDevice)
     // Get the device name from the path
     strncpy(name, path, 127);
     char *s = strstr(name, ":/");
-    if(s == NULL)
-	return NULL;
-    *s = 0;
+    if(s != NULL)
+        *s = 0;
 
     // Search the devoptab table for the specified device name
     // NOTE: We do this manually due to a 'bug' in GetDeviceOpTab
