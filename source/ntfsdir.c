@@ -476,7 +476,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     dir->ni = ntfsOpenEntry(dir->vd, path);
     if (!dir->ni) {
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = ENOENT;
         return NULL;
     }
@@ -485,7 +484,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     if (!(dir->ni->mrec->flags && MFT_RECORD_IS_DIRECTORY)) {
         ntfsCloseEntry(dir->vd, dir->ni);
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = ENOTDIR;
         return NULL;
     }
@@ -495,7 +493,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     if (ntfs_readdir(dir->ni, &position, dirState, (ntfs_filldir_t)ntfs_readdir_filler)) {
         ntfsCloseDir(dir);
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = errno;
         return NULL;
     }
