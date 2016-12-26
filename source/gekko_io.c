@@ -54,6 +54,10 @@
 #include <locale.h>
 #endif
 
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#endif
+
 #include "ntfs.h"
 #include "types.h"
 #include "logging.h"
@@ -62,6 +66,7 @@
 #include "cache.h"
 #include "device.h"
 #include "bootsect.h"
+
 
 #define DEV_FD(dev) ((gekko_fd *)dev->d_private)
 

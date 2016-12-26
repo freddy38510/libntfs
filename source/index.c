@@ -37,6 +37,10 @@
 #include <errno.h>
 #endif
 
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#endif
+
 #include "attrib.h"
 #include "debug.h"
 #include "index.h"

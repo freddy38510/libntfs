@@ -28,6 +28,9 @@
 #include <stdlib.h>
 #endif
 #ifdef HAVE_ERRNO_H
+#ifdef __CELLOS_LV2__
+#define __PME__
+#endif
 #include <errno.h>
 #endif
 #ifdef HAVE_STRING_H
@@ -41,6 +44,9 @@
 #if defined(PS3_GEKKO)
 #include "ntfs.h"
 #include "ps3_io.c"
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#endif
 
 const INTERFACE_ID ntfs_disc_interfaces[] = {
     { "usb000", &__io_ntfs_usb000 },
@@ -218,9 +224,15 @@ int ntfsInitVolume (ntfs_vd *vd)
     // Initialise the volume lock
     //PS3_LOCK LWP_MutexInit(&vd->lock, false);
 
+    #ifdef __CELLOS_LV2__
+    static sys_lwmutex_attribute_t attr = {
+	SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
+    };
+    #else
     static const sys_lwmutex_attr_t attr = {
 	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
     };
+    #endif
 
     sysLwMutexCreate(&vd->lock, &attr);
 

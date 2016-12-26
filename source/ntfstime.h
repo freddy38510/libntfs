@@ -36,7 +36,7 @@
 
 #include "types.h"
 
-#ifndef PS3_GEKKO
+#ifdef PS3_GEKKO
 /*
  * assume "struct timespec" is not defined if st_mtime is not defined
  */

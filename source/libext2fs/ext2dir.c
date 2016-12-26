@@ -43,7 +43,11 @@
 
 #include "ext2_internal.h"
 #include "ext2dir.h"
+#ifdef __CELLOS_LV2__
+#include "../includes/dirent.h"
+#else
 #include <sys/dir.h>
+#endif
 
 #define STATE(x)    ((ext2_dir_state*)(x)->dirStruct)
 

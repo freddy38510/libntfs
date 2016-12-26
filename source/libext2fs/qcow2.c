@@ -28,8 +28,18 @@
 
 #include "../config.h"
 #include <fcntl.h>
-#include <grp.h>
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
+#ifdef __CELLOS_LV2__
+//#include "../../defines/cellos_lv2.h"
+#include "../includes/grp.h"
+#include "../includes/pwd.h"
+uid_t getuid(void);
+gid_t getgid(void);
+#else
+#include <grp.h>
+#endif
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>

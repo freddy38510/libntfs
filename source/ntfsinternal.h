@@ -42,7 +42,12 @@
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
+#ifdef __CELLOS_LV2__
+#include <sys/synchronization.h>
+#include "../defines/cellos_lv2.h"
+#else
 #include <lv2/mutex.h>
+#endif
 #include "ntfs.h"
 #include "iosupport.h"
 

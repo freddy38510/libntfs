@@ -23,6 +23,10 @@
 #include "ext2fs.h"
 #include "tdb.h"
 
+#ifdef __CELLOS_LV2__
+int mkstemp(char *template);
+#endif
+
 /*
  * The data storage strategy used by icount relies on the observation
  * that most inode counts are either zero (for non-allocated inodes),

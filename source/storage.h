@@ -22,14 +22,22 @@
 #ifndef __SYS_STORAGE_H__
 #define __SYS_STORAGE_H__
 
+#ifndef __CELLOS_LV2__
 #ifndef __lv2ppu__
 #error you need the psl1ght/lv2 ppu compatible compiler!
+#endif
 #endif
 
 #include <stdint.h>
 #include <string.h>
+#ifdef __CELLOS_LV2__
+#include <sys/syscall.h>
+#include <sys/ppu_thread.h>
+#include "../defines/cellos_lv2.h"
+#else
 #include <ppu-lv2.h>
 #include <sys/thread.h>
+#endif
 
 //#include "io_buffer.h"
 

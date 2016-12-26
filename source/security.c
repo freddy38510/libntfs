@@ -47,10 +47,19 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-
 #include <unistd.h>
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#include "includes/grp.h"
+#include "includes/pwd.h"
+uid_t getuid(void);
+gid_t getgid(void);
+#else
 #include <grp.h>
+#endif
 
 #include "compat.h"
 #include "param.h"

@@ -26,6 +26,14 @@
 
 #include "compat.h"
 
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+int chdir (__const char *__path);
+pid_t fork (void);
+int dup2 (int __fd, int __fd2);
+pid_t setsid (void);
+#endif
+
 #ifndef HAVE_FFS
 /**
  * ffs - Find the first set bit in an int

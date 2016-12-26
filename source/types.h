@@ -43,7 +43,6 @@
 #define FALSE 0
 #define TRUE 1
 
-
 #if 0
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -51,8 +50,7 @@
 #else /* GEKKO */
 #endif
 
-#include <ppu-lv2.h>
-#if 0
+#ifdef __CELLOS_LV2__
 typedef uint8_t  u8;			/* Unsigned types of an exact size */
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -62,7 +60,17 @@ typedef int8_t  s8;			/* Signed types of an exact size */
 typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
-#endif
+
+typedef int32_t gid_t;
+typedef int32_t uid_t;
+
+typedef double f64;
+typedef	char *	caddr_t;
+typedef long suseconds_t;
+
+#else
+#include <ppu-lv2.h>
+#endif /* CELLOS_LV2 */
 
 #endif /* GEKKO */
 

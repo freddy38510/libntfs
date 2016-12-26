@@ -22,7 +22,10 @@
 #ifndef _MEM_ALLOCATE_H
 #define _MEM_ALLOCATE_H
 
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
+#include <stdlib.h>
 
 static inline void* ntfs_alloc (size_t size) {
     return malloc(size);

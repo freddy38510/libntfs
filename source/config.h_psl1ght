@@ -62,19 +62,19 @@
 #undef HAVE_FEATURES_H
 
 /* Define to 1 if you have the `ffs' function. */
-#undef HAVE_FFS
+#define HAVE_FFS 1
 
 /* Define to 1 if you have the `fork' function. */
-#undef HAVE_FORK
+#define HAVE_FORK 1
 
 /* Define to 1 if you have the `getmntent' function. */
 #undef HAVE_GETMNTENT
 
 /* Define to 1 if you have the <getopt.h> header file. */
-#undef HAVE_GETOPT_H
+#define HAVE_GETOPT_H 1
 
 /* Define to 1 if you have the `getopt_long' function. */
-#undef HAVE_GETOPT_LONG
+#define HAVE_GETOPT_LONG 1
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
@@ -86,7 +86,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <libgen.h> header file. */
-#undef HAVE_LIBGEN_H
+#define HAVE_LIBGEN_H 1
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
@@ -107,10 +107,10 @@
 #define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the <machine/endian.h> header file. */
-#undef HAVE_MACHINE_ENDIAN_H
+#define HAVE_MACHINE_ENDIAN_H 1
 
 /* Define to 1 if you have the <malloc.h> header file. */
-#undef HAVE_MALLOC_H
+#define HAVE_MALLOC_H 1
 
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
 #define HAVE_MBRTOWC 1
@@ -134,7 +134,7 @@
 #undef HAVE_MNTENT_H
 
 /* Define to 1 if you have the <pwd.h> header file. */
-#undef HAVE_PWD_H
+#define HAVE_PWD_H 1
 
 /* Define to 1 if you have the `random' function. */
 #undef HAVE_RANDOM
@@ -210,7 +210,7 @@
 #define HAVE_STRTOUL 1
 
 /* Define to 1 if `st_atim' is member of `struct stat'. */
-#define HAVE_STRUCT_STAT_ST_ATIM 1
+#undef HAVE_STRUCT_STAT_ST_ATIM
 
 /* Define to 1 if `st_atimensec' is member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_ATIMENSEC
@@ -219,10 +219,10 @@
 #undef HAVE_STRUCT_STAT_ST_ATIMESPEC
 
 /* Define to 1 if `st_blocks' is member of `struct stat'. */
-#define HAVE_STRUCT_STAT_ST_BLOCKS 1
+#undef HAVE_STRUCT_STAT_ST_BLOCKS
 
 /* Define to 1 if `st_rdev' is member of `struct stat'. */
-#define HAVE_STRUCT_STAT_ST_RDEV 1
+#undef HAVE_STRUCT_STAT_ST_RDEV
 
 /* Define to 1 if your `struct stat' has `st_blocks'. Deprecated, use
    `HAVE_STRUCT_STAT_ST_BLOCKS' instead. */
@@ -253,10 +253,10 @@
 #undef HAVE_SYS_MOUNT_H
 
 /* Define to 1 if you have the <sys/param.h> header file. */
-#undef HAVE_SYS_PARAM_H
+#define HAVE_SYS_PARAM_H 1
 
 /* Define to 1 if you have the <sys/statvfs.h> header file. */
-#undef HAVE_SYS_STATVFS_H
+#define HAVE_SYS_STATVFS_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
@@ -277,7 +277,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `utime' function. */
-#define HAVE_UTIME 1
+#undef HAVE_UTIME
 
 /* Define to 1 if you have the `utimensat' function. */
 #undef HAVE_UTIMENSAT

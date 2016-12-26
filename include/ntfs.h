@@ -30,11 +30,19 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
+#ifndef __CELLOS_LV2__
 #include <ppu-lv2.h>
+#endif
 #include <stdio.h>
 
 #include <fcntl.h> // file flags
+#ifndef __CELLOS_LV2__
 #include <sys/syslimits.h>
+#else
+#include "../source/includes/syslimits.h"
+#include "../source/types.h"
+struct stat;
+#endif
 
 #ifndef ATTRIBUTE_ALIGN
 # define ATTRIBUTE_ALIGN(v)				__attribute__((aligned(v)))
@@ -223,8 +231,8 @@ void NTFS_deinit_system_io(void);
 #define ST_RDONLY 0x0001
 #define ST_NOSUID 0x0002
 
-typedef __uint32_t fsblkcnt_t;
-typedef __uint32_t fsfilcnt_t;
+typedef uint32_t fsblkcnt_t;
+typedef uint32_t fsfilcnt_t;
 
 struct statvfs {
 	unsigned long f_bsize;

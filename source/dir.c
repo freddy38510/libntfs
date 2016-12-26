@@ -39,9 +39,12 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-
 #ifdef HAVE_SYS_SYSMACROS_H
 #include <sys/sysmacros.h>
+#endif
+
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
 #endif
 
 #include "param.h"

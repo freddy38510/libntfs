@@ -58,6 +58,10 @@
 #include <sys/mnttab.h>
 #endif
 
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#endif
+
 #include "param.h"
 #include "compat.h"
 #include "volume.h"

@@ -22,9 +22,23 @@
 #include "ntfs.h"
 #include "iosupport.h"
 #include "storage.h"
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 
+#ifdef __CELLOS_LV2__
+#include <cell/fs/cell_fs_file_api.h>
+#include <sys/timer.h>  /* for usleep() */
+#include "../defines/cellos_lv2.h"
+#define SC_FS_LINK						(810)
+static int sysLv2FsLink(const char *oldpath, const char *newpath)
+{
+	system_call_2(SC_FS_LINK, (uint64_t)(uint32_t)oldpath, (uint64_t)(uint32_t)newpath);
+	return_to_user_prog(int);
+}
+#else
 #include <sys/file.h>
+#endif
 
 #define FS_S_IFMT 0170000
 #define UMASK(mode)		((mode)&~g_umask)
@@ -536,7 +550,11 @@ const DISC_INTERFACE __io_ntfs_usb007 = {
 	(FN_MEDIUM_SHUTDOWN)&PS3_NTFS_Shutdown8
 };
 
+#ifdef __CELLOS_LV2__
+#include <cell/fs/cell_fs_errno.h>
+#else
 #include <sys/errno.h>
+#endif
 #include "ntfsfile.h"
 #include "ntfsdir.h"
 
@@ -553,10 +571,16 @@ static sys_lwmutex_t ps3ntfs_lock;
 static void ps3ntfs_init()
 {
     int n;
-    
+
+    #ifdef __CELLOS_LV2__
+    static sys_lwmutex_attribute_t attr = {
+	SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
+    };
+    #else
     static const sys_lwmutex_attr_t attr = {
 	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
     };
+    #endif
 
     if (_init) return;
 
@@ -655,7 +679,11 @@ int ps3ntfs_open(const char *path, int flags, int mode)
         else
             mode = 0;
 
-        int ret = sysLv2FsOpen(path, flag,&fd,mode,NULL,0);
+	#ifdef __CELLOS_LV2__
+        int ret = sysLv2FsOpen(path, flag,&fd,NULL,0);
+	#else
+	int ret = sysLv2FsOpen(path, flag,&fd,mode,NULL,0);
+	#endif
 
         if(ret < 0) {my_files[m] = 0; reent1._errno = lv2error(ret); sysLwMutexUnlock(&ps3ntfs_lock); return -lv2error(ret);}
 
@@ -1211,7 +1239,16 @@ int ps3ntfs_errno(void)
 // STANDART I/O 
 
 #ifdef PS3_STDIO
-
+#ifdef __CELLOS_LV2__
+#include "includes/sys_reent.h"
+#include "types.h"
+#include <sys/time.h>
+//#include <sys/times.h>
+#include <sys/stat.h>
+#include "includes/dirent.h"
+#include "includes/resource.h"
+#include <utime.h>
+#else
 #include <sys/reent.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -1220,6 +1257,7 @@ int ps3ntfs_errno(void)
 #include <sys/dirent.h>
 #include <sys/resource.h>
 #include <utime.h>
+#endif
 
 struct __syscalls_t {
 	caddr_t (*sbrk_r)(struct _reent *r,ptrdiff_t incr);
@@ -1291,7 +1329,11 @@ int ps3ntfs_get_fd_from_FILE(FILE *fp)
 
     if(!fp) return -EINVAL;
 
+    #ifdef __CELLOS_LV2__
+    fd = fileno(fp);
+    #else
     fd = fp->_file;
+    #endif
 
     if(fd >= FDs_RANGE && fd < FDs_RANGE + MAX_FDs) {
         return FDs[fd - FDs_RANGE];
@@ -1689,9 +1731,15 @@ void NTFS_init_system_io(void)
 
     if(__sys_io_init) return;
 
+    #ifdef __CELLOS_LV2__
+    static sys_lwmutex_attribute_t attr = {
+	SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
+    };
+    #else
     static const sys_lwmutex_attr_t attr = {
 	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
     };
+    #endif
 
     sysLwMutexCreate(&sys_lock, &attr);
 
@@ -1705,7 +1753,7 @@ void NTFS_init_system_io(void)
     __syscalls.close_r = s_ps3ntfs_close;
     __syscalls.read_r = s_ps3ntfs_read;
     __syscalls.write_r = s_ps3ntfs_write;
-    __syscalls.lseek_r = s_ps3ntfs_lseek;
+    __syscalls.lseek_r = s_ps3ntfs_lseek; //off_t
     __syscalls.lseek64_r = s_ps3ntfs_lseek64;
     __syscalls.fstat_r = s_ps3ntfs_fstat;
     __syscalls.fstat64_r = s_ps3ntfs_fstat64;

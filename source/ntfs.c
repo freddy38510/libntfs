@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #endif
 #ifdef HAVE_ERRNO_H
+#ifdef __CELLOS_LV2__
+#define __PME__
+#endif
 #include <errno.h>
 #endif
 #ifdef HAVE_STRING_H

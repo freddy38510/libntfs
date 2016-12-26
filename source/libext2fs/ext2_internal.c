@@ -21,6 +21,9 @@
  */
 
 #include <stdlib.h>
+#ifdef __CELLOS_LV2__
+#define __PME__
+#endif
 #include <errno.h>
 #include <string.h>
 #include "ext2_internal.h"
@@ -28,6 +31,10 @@
 #include "ext2file.h"
 #include "gekko_io2.h"
 #include "ext2fs.h"
+
+#ifdef __CELLOS_LV2__
+#include "../defines/cellos_lv2.h"
+#endif
 
 // EXT2 device driver devoptab
 static const devoptab_t devops_ext2 =
@@ -185,10 +192,15 @@ int ext2InitVolume (ext2_vd *vd)
     // Initialise the volume lock
    // LWP_MutexInit(&vd->lock, false);
 
+    #ifdef __CELLOS_LV2__
+    static sys_lwmutex_attribute_t attr = {
+	SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
+    };
+    #else
     static const sys_lwmutex_attr_t attr = {
 	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
     };
-
+    #endif
     sysLwMutexCreate(&vd->lock, &attr);
 
     return 0;
