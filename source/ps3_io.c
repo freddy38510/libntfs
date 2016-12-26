@@ -30,6 +30,7 @@
 #include <cell/fs/cell_fs_file_api.h>
 #include <sys/timer.h>  /* for usleep() */
 #include "../defines/cellos_lv2.h"
+#include "types.h"
 #define SC_FS_LINK						(810)
 static int sysLv2FsLink(const char *oldpath, const char *newpath)
 {
