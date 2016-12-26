@@ -1,7 +1,7 @@
 #ifndef _PS3_DEFINES_H
 #define _PS3_DEFINES_H
 
-// *** stat.h *** //
+// *** sys/stat.h *** //
 
 #define	_IFCHR	0020000	/* character special */
 #define	_IFBLK	0060000	/* block special */
@@ -46,23 +46,12 @@
 #define	S_ISGID		0002000	/* set group id on execution */
 #define	S_ISUID		0004000	/* set user id on execution */
 
-// -------------------------------- //
-
-
 // *** errno.h *** //
 
 #define EOPNOTSUPP ENOTSUP
 #define ELOOP EMLINK
 
-// -------------------------------- //
-
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-
-#define usleep sys_timer_usleep
-
-#define _exit _Exit
-
+// *** sys/synchronization.h *** //
 
 #define sys_lwmutex_attr_t sys_mutex_attribute_t
 #define sys_lwmutex_t sys_lwmutex_t
@@ -75,6 +64,10 @@
 #define SYS_LWMUTEX_ATTR_RECURSIVE SYS_SYNC_RECURSIVE
 #define SYS_LWMUTEX_ATTR_PROTOCOL SYS_SYNC_PRIORITY
 
+// -------------------------------- //
+
+// *** sys/syscall.h *** //
+
 #define lv2syscall1 system_call_1
 #define lv2syscall2 system_call_2
 #define lv2syscall3 system_call_3
@@ -83,6 +76,8 @@
 #define lv2syscall6 system_call_6
 #define lv2syscall7 system_call_7
 #define lv2syscall8 system_call_8
+
+// *** cell/fs/cell_fs_file_api.h *** //
 
 #define sysFSStat CellFsStat
 #define sysFSDirent CellFsDirent
@@ -105,12 +100,21 @@
 #define sysLv2FsRead cellFsRead
 #define sysLv2FsLSeek64 cellFsLseek
 
-
+// *** sys/fs_external.h *** //
 
 #define SYS_O_MSELF CELL_FS_O_MSELF
 #define SYS_O_CREAT CELL_FS_O_CREAT
 #define SYS_O_EXCL CELL_FS_O_EXCL
 #define SYS_O_TRUNC CELL_FS_O_TRUNC
 #define SYS_O_APPEND CELL_FS_O_APPEND
+
+// ** miscellaneous *** //
+
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+
+#define usleep sys_timer_usleep
+
+#define _exit _Exit
 
 #endif //_PS3_DEFINES_H
