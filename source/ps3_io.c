@@ -561,7 +561,8 @@ const DISC_INTERFACE __io_ntfs_usb007 = {
 #include "ntfsfile.h"
 #include "ntfsdir.h"
 
-static __thread struct _reent reent1;
+//static __thread struct _reent reent1; // This product "Error: 'reent1' is TLS variable. PRX doesn't support TLS now!" while compiling a project with libntfs_ext library
+static struct _reent reent1;
 
 static int _init = 0;
 #define MAX_LEVELS 32
