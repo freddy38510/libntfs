@@ -1,3 +1,4 @@
+CELL_SDK ?= /c/cell
 CELL_MK_DIR ?= $(CELL_SDK)/samples/mk
 
 include $(CELL_MK_DIR)/sdk.makedef.mk

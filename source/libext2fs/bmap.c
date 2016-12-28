@@ -39,7 +39,7 @@ static _BMAP_INLINE_ errcode_t block_ind_bmap(ext2_filsys fs, int flags,
 					      blk_t nr, blk_t *ret_blk)
 {
 	errcode_t	retval;
-	blk_t		b;
+	blk_t		b=0;
 
 	if (!ind) {
 		if (flags & BMAP_SET)
@@ -95,7 +95,7 @@ static _BMAP_INLINE_ errcode_t block_dind_bmap(ext2_filsys fs, int flags,
 					       int *blocks_alloc,
 					       blk_t nr, blk_t *ret_blk)
 {
-	blk_t		b;
+	blk_t		b=0;
 	errcode_t	retval;
 	blk_t		addr_per_block;
 
@@ -115,7 +115,7 @@ static _BMAP_INLINE_ errcode_t block_tind_bmap(ext2_filsys fs, int flags,
 					       int *blocks_alloc,
 					       blk_t nr, blk_t *ret_blk)
 {
-	blk_t		b;
+	blk_t		b=0;
 	errcode_t	retval;
 	blk_t		addr_per_block;
 
@@ -237,7 +237,7 @@ errcode_t ext2fs_bmap2(ext2_filsys fs, ext2_ino_t ino, struct ext2_inode *inode,
 	struct ext2_inode inode_buf;
 	ext2_extent_handle_t handle = 0;
 	blk_t addr_per_block;
-	blk_t	b, blk32;
+	blk_t b=0, blk32;
 	char	*buf = 0;
 	errcode_t	retval = 0;
 	int		blocks_alloc = 0, inode_dirty = 0;

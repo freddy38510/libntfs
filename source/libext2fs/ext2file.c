@@ -29,7 +29,7 @@
 #include "ext2_internal.h"
 #include "ext2file.h"
 
-#define STATE(x)    ((ext2_file_state*)(s64)x)
+#define STATE(x)    ((ext2_file_state*)(intptr_t)(s64)x)
 
 void ext2CloseFile (ext2_file_state *file)
 {
@@ -67,7 +67,7 @@ int ext2_open_r (struct _reent *r, void *fileStruct, const char *path, int flags
 {
     //ext2_log_trace("fileStruct %p, path %s, flags %i, mode %i\n", fileStruct, path, flags, mode);
 
-    ext2_file_state* file = STATE(fileStruct);
+    ext2_file_state* file = STATE((int)fileStruct);
 
     // Get the volume descriptor for this path
     file->vd = ext2GetVolume(path);
@@ -179,7 +179,7 @@ int ext2_open_r (struct _reent *r, void *fileStruct, const char *path, int flags
     // Unlock
     ext2Unlock(file->vd);
 
-    return (int)(s64)fileStruct;
+    return (int)(s64)(intptr_t)fileStruct;
 }
 
 int ext2_close_r (struct _reent *r, int fd)
@@ -449,7 +449,7 @@ int ext2_file_to_sectors (struct _reent *r,const char *path,uint32_t *sec_out,ui
 {
     ntfs_file_state fileStruct;
    
-    ext2_file_state* file = STATE(&fileStruct);
+    ext2_file_state* file = STATE((int)&fileStruct);
 
     // Get the volume descriptor for this path
     file->vd = ext2GetVolume(path);

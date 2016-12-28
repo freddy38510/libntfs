@@ -601,7 +601,7 @@ static int get_dev(int fd)
 
     if(fd <= 0) return 1;
 
-    ntfs_file_state* file = (void *) (s64) fd;
+    ntfs_file_state* file = (void *) (intptr_t) (s64) fd;
     
     for(n = 0; n < 33; n++) {
         if(devoptab_list[n])  {
@@ -1485,7 +1485,7 @@ static _ssize_t s_ps3ntfs_write(struct _reent *r,int fd,const void *ptr,size_t l
 
 static _off_t s_ps3ntfs_lseek(struct _reent *r,int fd, off_t pos,int dir)
 {
-    int ret;
+    _off_t ret;
 
     if(fd >= FDs_RANGE && fd < FDs_RANGE + MAX_FDs) fd = FDs[fd - FDs_RANGE];
     else return sv_syscalls.lseek_r(r, fd, pos, dir); //return -EIO;
@@ -1684,7 +1684,7 @@ static int s_ps3ntfs_rmdir(struct _reent *r,const char *dirname)
 static int s_ps3ntfs_closedir_r(struct _reent *r,DIR *dirp)
 {
 
-    s32 ret = ps3ntfs_dirclose((DIR_ITER*) (s64) dirp->dd_fd);
+    s32 ret = ps3ntfs_dirclose((DIR_ITER*) (intptr_t) (s64) dirp->dd_fd);
 
 	free(dirp->dd_buf);
 	free(dirp);
@@ -1741,7 +1741,7 @@ static s32 readdir_i(DIR *dirp,struct dirent *entry,struct dirent **result)
 
 	sysLwMutexLock(&sys_lock, 0);
 	*result = NULL;
-    ret =ps3ntfs_dirnext((DIR_ITER *) (s64) dirp->dd_fd, entry->d_name, &st) ;
+    ret =ps3ntfs_dirnext((DIR_ITER *) (intptr_t) (s64) dirp->dd_fd, entry->d_name, &st) ;
 	if(ret<0) {sysLwMutexUnlock(&sys_lock);return ret;}
 
     entry->d_namlen = strlen(entry->d_name);
@@ -1818,7 +1818,7 @@ void NTFS_init_system_io(void)
     __syscalls.close_r = s_ps3ntfs_close;
     __syscalls.read_r = s_ps3ntfs_read;
     __syscalls.write_r = s_ps3ntfs_write;
-    __syscalls.lseek_r = s_ps3ntfs_lseek; //off_t
+    *(_off_t*) __syscalls.lseek_r = (_off_t) s_ps3ntfs_lseek; //off_t
     __syscalls.lseek64_r = s_ps3ntfs_lseek64;
     __syscalls.fstat_r = s_ps3ntfs_fstat;
     __syscalls.fstat64_r = s_ps3ntfs_fstat64;
