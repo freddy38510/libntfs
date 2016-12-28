@@ -53,6 +53,7 @@
 
 // *** sys/synchronization.h *** //
 
+#define sys_mutex_attr_t sys_mutex_attribute_t
 #define sys_lwmutex_attr_t sys_mutex_attribute_t
 #define sys_lwmutex_t sys_lwmutex_t
 #define sysLwMutexCreate sys_lwmutex_create

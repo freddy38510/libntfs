@@ -44,9 +44,9 @@
 #include "ntfsdir.h"
 #include "device.h"
 #ifdef __CELLOS_LV2__
-#include "includes/dirent.h"
-#else
-#include <sys/dir.h>
+	#include "includes/dirent.h"
+	#else
+	#include <sys/dir.h>
 #endif
 
 #define STATE(x)    ((ntfs_dir_state*)(x)->dirStruct)
@@ -466,34 +466,12 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     ntfs_dir_state* dir = STATE(dirState);
     s64 position = 0;
 
-    // Get the volume descriptor for this path (new from Estwald)
-
-    ntfs_vd *vd  = ntfsGetVolume(path);
-
-    if (!vd) {
-        r->_errno = ENODEV;
-        return NULL;
-    }
-
-    dir->vd = malloc(sizeof(ntfs_vd));
-
-    if (!dir->vd) {
-        r->_errno = ENODEV;
-        return NULL;
-    }
-
-    memcpy(dir->vd, vd, sizeof(ntfs_vd));
-    dir->vd->firstOpenDir = NULL;
-    dir->vd->openDirCount = 0;
-
-/*
     // Get the volume descriptor for this path
     dir->vd = ntfsGetVolume(path);
     if (!dir->vd) {
         r->_errno = ENODEV;
         return NULL;
     }
-    */
 
     // Lock
     ntfsLock(dir->vd);
@@ -502,7 +480,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     dir->ni = ntfsOpenEntry(dir->vd, path);
     if (!dir->ni) {
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = ENOENT;
         return NULL;
     }
@@ -511,7 +488,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     if (!(dir->ni->mrec->flags && MFT_RECORD_IS_DIRECTORY)) {
         ntfsCloseEntry(dir->vd, dir->ni);
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = ENOTDIR;
         return NULL;
     }
@@ -521,7 +497,6 @@ DIR_ITER *ntfs_diropen_r (struct _reent *r, DIR_ITER *dirState, const char *path
     if (ntfs_readdir(dir->ni, &position, dirState, (ntfs_filldir_t)ntfs_readdir_filler)) {
         ntfsCloseDir(dir);
         ntfsUnlock(dir->vd);
-        ntfs_free(dir->vd);
         r->_errno = errno;
         return NULL;
     }
@@ -639,7 +614,7 @@ int ntfs_dirnext_r (struct _reent *r, DIR_ITER *dirState, char *filename, struct
 
     // Update directory times
     ntfsUpdateTimes(dir->vd, dir->ni, NTFS_UPDATE_ATIME);
-
+    ntfsUnlock(dir->vd);
     return 0;
 }
 
@@ -674,8 +649,6 @@ int ntfs_dirclose_r (struct _reent *r, DIR_ITER *dirState)
 
     // Unlock
     ntfsUnlock(dir->vd);
-
-    ntfs_free(dir->vd); // added by Estwald
 
     return 0;
 }
