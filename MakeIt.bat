@@ -1,12 +1,8 @@
 @echo off
-set PS3SDK=/f/PSDK3v2
-set WIN_PS3SDK=F:/PSDK3v2
-set PATH=%WIN_PS3SDK%/mingw/msys/1.0/bin;%WIN_PS3SDK%/mingw/bin;
-set PATH=%WIN_PS3SDK%/mingw/msys/1.0/bin;%WIN_PS3SDK%/mingw/bin;%WIN_PS3SDK%/ps3dev/bin;%WIN_PS3SDK%/ps3dev/ppu/bin;%WIN_PS3SDK%/ps3dev/spu/bin;%WIN_PS3SDK%/mingw/Python27;%PATH%;
-set PSL1GHT=%PS3SDK%/psl1ght
-set PS3DEV=%PS3SDK%/ps3dev
 
-rem make clean
-make 
+set CYGWIN=C:\cygwin\bin
 
-pause
+if not exist %CYGWIN%\bash.exe set CYGWIN=C:\msys\1.0\bin
+
+set CHERE_INVOKING=1
+%CYGWIN%\bash --login -i -c 'make;
