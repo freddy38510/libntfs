@@ -35,7 +35,8 @@ extern "C" {
 #include <fcntl.h> // file flags
 #include <limits.h>
 #include <sys/types.h>
-struct stat;
+#include <sys/stat.h>
+
 #define u32 uint32_t
 #define s64 int64_t
 
