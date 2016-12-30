@@ -159,7 +159,9 @@ typedef struct _ntfs_vd {
     u16 openFileCount;                      /* The total number of files currently open in this volume */
 } ntfs_vd;
 
+
 extern void panic(const char *fmt, ...);
+
 extern void mutex_dump_info(sys_mutex_t lock);
 
 extern void trace(int flags, int level, const char *subsys, const char *fmt, ...);

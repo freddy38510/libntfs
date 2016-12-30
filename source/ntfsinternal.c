@@ -40,13 +40,16 @@
 #include "ntfsinternal.h"
 #include "ntfsdir.h"
 #include "ntfsfile.h"
-
 #if defined(PS3_GEKKO)
 #include "ntfs.h"
 #include "ps3_io.c"
 	#ifdef __CELLOS_LV2__
 	#include "../defines/cellos_lv2.h"
 	#endif
+
+void panic(const char *fmt, ...){};
+void mutex_dump_info(sys_mutex_t lock){};
+void trace(int flags, int level, const char *subsys, const char *fmt, ...){};
 
 const INTERFACE_ID ntfs_disc_interfaces[] = {
     { "usb000", &__io_ntfs_usb000 },
