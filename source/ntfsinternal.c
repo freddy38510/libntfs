@@ -186,7 +186,7 @@ const devoptab_t *ntfsGetDevice (const char *path, bool useDefaultDevice)
     // chances are that this path has no device name in it.
     // Call GetDeviceOpTab to get our default device (chdir).
     if (useDefaultDevice) {
-	panic("NTFS: Using default device");
+	ntfs_log_warning("NTFS: Using default device");
         for (i = 0; i < STD_MAX; i++) {
         devoptab = devoptab_list[i];
         if (devoptab && devoptab->name) {

@@ -42,7 +42,7 @@
 
 // #define NTFS_USE_LWMUTEX
 
-// #define NTFS_LOCK_DEBUG
+#define NTFS_LOCK_DEBUG
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
@@ -159,12 +159,7 @@ typedef struct _ntfs_vd {
     u16 openFileCount;                      /* The total number of files currently open in this volume */
 } ntfs_vd;
 
-//extern void panic(const char *fmt, ...);
-#define panic(...) ntfs_log_warning(__VA_ARGS__)
-
-extern void mutex_dump_info(sys_mutex_t lock);
-
-extern void trace(int flags, int level, const char *subsys, const char *fmt, ...);
+//extern void mutex_dump_info(sys_mutex_t lock); // to replace by an equivalent function, or create one
 
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
@@ -174,13 +169,13 @@ static inline void ntfsLock (ntfs_vd *vd)
   sys_ppu_thread_t t;
   sys_ppu_thread_get_id(&t);
 
-  trace(0, 2, "NTFS", "0x%x: Locking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+  ntfs_log_trace(0, 2, "NTFS", "0x%x: Locking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 
 #endif
 #ifdef NTFS_USE_LWMUTEX
   int r = sys_lwmutex_lock(&vd->lock, 0);
   if(r) {
-    panic("unable to lock volume %p mutex:0x%016llx error:%x",
+    ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x",
 	  vd, vd->lock.lock_var, r);
   }
 #else
@@ -190,7 +185,7 @@ static inline void ntfsLock (ntfs_vd *vd)
   while(1) {
     int r = sys_mutex_lock(vd->lock, 1000000);
     if(r) {
-      mutex_dump_info(vd->lock);
+      //mutex_dump_info(vd->lock); // to replace by an equivalent function, or create one
       continue;
     }
     break;
@@ -202,7 +197,7 @@ static inline void ntfsLock (ntfs_vd *vd)
 #endif
 #ifdef NTFS_LOCK_DEBUG
   vd->lockdepth++;
-  trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+  ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 #endif
 }
 
@@ -214,7 +209,7 @@ static inline void ntfsUnlock (ntfs_vd *vd)
   sys_ppu_thread_get_id(&t);
 
   vd->lockdepth--;
-  trace(0, 2, "NTFS", "0x%x: Unlocking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+  ntfs_log_trace(0, 2, "NTFS", "0x%x: Unlocking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 #endif
 #ifdef NTFS_USE_LWMUTEX
   int r = sys_lwmutex_unlock(&vd->lock);
@@ -222,7 +217,7 @@ static inline void ntfsUnlock (ntfs_vd *vd)
   int r = sys_mutex_unlock(vd->lock);
 #endif
   if(r)
-    panic("Failed to unlock mutex: %x", r);
+    ntfs_log_warning("Failed to unlock mutex: %x", r);
 }
 
 /* Gekko device related routines */
