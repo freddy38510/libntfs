@@ -18,7 +18,7 @@ PACKAGER = $(CELL_HOST_PATH)/bin/make_package_npdrm$(EXE_SUFFIX)
 USER_DIR = $(OBJS_DIR)/USRDIR
 
 PKG_CONFIG = package.conf
-PKG_TARGET = $(shell $(PACKAGER) --print-content-id $(PKG_CONFIG)).pkg
+PKG_TARGET = $(sh $(PACKAGER) --print-content-id $(PKG_CONFIG)).pkg
 
 CONTENTS = $(OBJS_DIR)/PARAM.SFO $(OBJS_DIR)/ICON0.PNG $(USER_DIR)/EBOOT.BIN
 
@@ -36,5 +36,10 @@ $(OBJS_DIR)/PARAM.SFO: PARAM.SFO
 $(OBJS_DIR)/ICON0.PNG: ICON0.PNG
 	@mkdir -p $(@D)
 	@$(CP) $< $@
+
+$(USER_DIR)/EBOOT.BIN: $(PPU_TARGET)
+	@echo \# make EBOOT.BIN in $(USER_DIR)/.
+	@mkdir -p $(@D)
+	$(MAKE_FSELF) $< $@
 
 include $(CELL_MK_DIR)/sdk.target.mk
