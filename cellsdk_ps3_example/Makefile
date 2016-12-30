@@ -19,12 +19,6 @@ MAKE_SELF = scetool -v --sce-type=SELF --compress-data=FALSE --skip-sections=FAL
 
 USER_DIR = $(OBJS_DIR)/USRDIR
 
-<<<<<<< HEAD
-=======
-PKG_CONFIG = package.conf
-PKG_TARGET = $(sh $(PACKAGER) --print-content-id $(PKG_CONFIG)).pkg
-
->>>>>>> origin/develop
 CONTENTS = $(OBJS_DIR)/PARAM.SFO $(OBJS_DIR)/ICON0.PNG $(USER_DIR)/EBOOT.BIN
 
 EXTRA_TARGET = $(PKG_TARGET)
@@ -47,10 +41,5 @@ $(USER_DIR)/EBOOT.BIN: $(PPU_TARGET)
 	@mkdir -p $(@D)
 	modElf $<
 	$(MAKE_SELF) $< $@
-
-$(USER_DIR)/EBOOT.BIN: $(PPU_TARGET)
-	@echo \# make EBOOT.BIN in $(USER_DIR)/.
-	@mkdir -p $(@D)
-	$(MAKE_FSELF) $< $@
 
 include $(CELL_MK_DIR)/sdk.target.mk
