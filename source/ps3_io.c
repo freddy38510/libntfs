@@ -1381,8 +1381,8 @@ struct __syscalls_t {
 	void (*exit)(int rc);
 };
 
-//extern struct __syscalls_t __syscalls;
-struct __syscalls_t __syscalls; //temporary fix for "reference to undefined symbol `__syscalls'" *** check this please ***
+static struct __syscalls_t __syscalls; // this fix the reference to undefined symbol __syscalls
+extern struct __syscalls_t __syscalls;
 static struct __syscalls_t sv_syscalls;
 static sys_lwmutex_t sys_lock;
 
