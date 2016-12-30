@@ -23,7 +23,7 @@ SYS_PROCESS_PARAM(1001, 0x10000)
 int max_list = 0;
 static char buff[4096];
 
-FILE *LOG;
+int LOG;
 
 void log_printf(const char *format, ...);
 void list(const char *path, int depth);
@@ -41,7 +41,8 @@ void log_printf(const char *format, ...)
 	vsprintf( (void *) buff, format, opt);
 	va_end(opt);
 	
-	fputs(str, LOG);
+	uint64_t sw;
+	cellFsWrite(LOG, (const void *) str, (uint64_t)strlen(str), &sw);
 }
 
 void list(const char *path, int depth)
@@ -192,18 +193,17 @@ char buffer[1024];
 int main(void)
 {
 	int ret;
-	ret = cellSysmoduleLoadModule(CELL_SYSMODULE_IO);
-	if (ret != CELL_OK) return ret;
+	
 	ret = cellSysmoduleLoadModule(CELL_SYSMODULE_FS);
 	if (ret != CELL_OK) return ret;
 	
-	LOG = fopen("/dev_hdd0/libntfs_sample_log.txt", "wb");
-	if(LOG==NULL) return 0;
+	ret = cellFsOpen("/dev_hdd0/libntfs_sample_log.txt",
+                     CELL_FS_O_RDWR|CELL_FS_O_CREAT, &LOG, NULL, 0);
+	if(ret) return ret;
 	
 	const char *cur_device = "/ntfs0:";
 	char path[1024];
 	int i, k, r;
-
 	
 	for(k = 0; k < 8; k++) {
 		for (i = 0; i < mountCount[k]; i++)
@@ -315,7 +315,7 @@ int main(void)
 	
 	log_printf("OK\n");
 	
-	fclose(LOG);
+	cellFsClose(LOG);
 	
 	return 0;
 }
