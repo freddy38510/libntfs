@@ -5,7 +5,7 @@ include $(CELL_MK_DIR)/sdk.makedef.mk
 
 PPU_LIB_TARGET	= libntfs_ext.a
 PPU_INCDIRS = -Iinclude
-PPU_SRCS = $(source/includes/reent.c) $(wildcard source/*.c) $(wildcard source/libext2fs/*.c)
+PPU_SRCS = $(wildcard source/*.c) $(wildcard source/libext2fs/*.c)
 
 DEFINES += -DBIGENDIAN -D__CELLOS_LV2__ -DPS3_GEKKO -DHAVE_CONFIG_H -DPS3_STDIO 
 

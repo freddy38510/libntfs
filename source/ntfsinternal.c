@@ -43,9 +43,9 @@
 
 #if defined(PS3_GEKKO)
 #include "ntfs.h"
-#include "ps3_io.c"
+//#include "ps3_io.c"
 	#ifdef __CELLOS_LV2__
-	#include "../defines/cellos_lv2.h"
+	#include "defines/cellos_lv2.h"
 	#endif
 
 const INTERFACE_ID ntfs_disc_interfaces[] = {

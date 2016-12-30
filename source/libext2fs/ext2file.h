@@ -24,7 +24,7 @@
 #define _EXT2FILE_H
 
 #ifdef __CELLOS_LV2__
-#include "../includes/sys_reent.h"
+#include "../sys_reent.h"
 #else
 #include <sys/reent.h>
 #endif

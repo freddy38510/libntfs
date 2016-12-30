@@ -47,7 +47,7 @@
 #endif
 
 #ifdef __CELLOS_LV2__
-#include "../defines/cellos_lv2.h"
+#include "defines/cellos_lv2.h"
 #endif
 
 #include "compat.h"

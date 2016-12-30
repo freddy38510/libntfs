@@ -19,7 +19,7 @@
 #include <unistd.h>
 #endif
 #ifdef __CELLOS_LV2__
-#include "../includes/sys_time.h"
+#include "../sys_time.h"
 pid_t getpid(void);
 #else
 #include <sys/time.h>

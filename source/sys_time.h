@@ -5,8 +5,8 @@
 #ifndef _SYS_TIME_H_
 #define _SYS_TIME_H_
 
-#include "../includes/_ansi.h"
-#include "../types.h"
+#include "_ansi.h"
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {

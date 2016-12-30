@@ -33,7 +33,7 @@
 #ifdef __CELLOS_LV2__
 	#include <sys/syscall.h>
 	#include <sys/ppu_thread.h>
-	#include "../defines/cellos_lv2.h"
+	#include "defines/cellos_lv2.h"
 	#else
 	#include <ppu-lv2.h>
 	#include <sys/thread.h>

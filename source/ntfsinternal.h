@@ -50,7 +50,7 @@
 #ifdef __CELLOS_LV2__
 	#include <sys/synchronization.h>
 	#include <sys/ppu_thread.h>
-	#include "../defines/cellos_lv2.h"
+	#include "defines/cellos_lv2.h"
 	#else
 	#include <lv2/mutex.h>
 #endif
@@ -159,7 +159,9 @@ typedef struct _ntfs_vd {
     u16 openFileCount;                      /* The total number of files currently open in this volume */
 } ntfs_vd;
 
-extern void panic(const char *fmt, ...);
+//extern void panic(const char *fmt, ...);
+#define panic(...) ntfs_log_warning(__VA_ARGS__)
+
 extern void mutex_dump_info(sys_mutex_t lock);
 
 extern void trace(int flags, int level, const char *subsys, const char *fmt, ...);

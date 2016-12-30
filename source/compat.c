@@ -27,7 +27,7 @@
 #include "compat.h"
 
 #ifdef __CELLOS_LV2__
-#include "../defines/cellos_lv2.h"
+#include "defines/cellos_lv2.h"
 int chdir (__const char *__path);
 pid_t fork (void);
 int dup2 (int __fd, int __fd2);

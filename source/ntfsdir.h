@@ -24,7 +24,7 @@
 
 #include "ntfsinternal.h"
 #ifdef __CELLOS_LV2__
-#include "includes/sys_reent.h"
+#include "sys_reent.h"
 #else
 #include <sys/reent.h>
 #endif

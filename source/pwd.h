@@ -1,13 +1,6 @@
-/*	$NetBSD: grp.h,v 1.7 1995/04/29 05:30:40 cgd Exp $	*/
-
 /*-
- * Copyright (c) 1989, 1993
- *	The Regents of the University of California.  All rights reserved.
- * (c) UNIX System Laboratories, Inc.
- * All or some portions of this file are derived from material licensed
- * to the University of California by American Telephone and Telegraph
- * Co. or Unix System Laboratories, Inc. and are reproduced herein with
- * the permission of UNIX System Laboratories, Inc.
+ * Copyright (c) 1989 The Regents of the University of California.
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,59 +30,50 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)grp.h	8.2 (Berkeley) 1/21/94
+ *	@(#)pwd.h	5.13 (Berkeley) 5/28/91
  */
 
-#ifndef _GRP_H_
-#define	_GRP_H_
-
-//#include <sys/types.h>
-#include "../types.h"
-#ifdef __CYGWIN__
-#include <cygwin/grp.h>
-#endif
-
-#if !defined(_POSIX_SOURCE) && !defined(_XOPEN_SOURCE)
-#define	_PATH_GROUP		"/etc/group"
-#endif
-
-struct group {
-	char	*gr_name;		/* group name */
-	char	*gr_passwd;		/* group password */
-	gid_t	gr_gid;			/* group id */
-	char	**gr_mem;		/* group members */
-};
-
+#ifndef _PWD_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define	_PWD_H_
+
+//#include <sys/types.h>
+#include "types.h"
+
+#ifndef _POSIX_SOURCE
+#define	_PATH_PASSWD		"/etc/passwd"
+
+#define	_PASSWORD_LEN		128	/* max length, not counting NULL */
+#endif
+
+struct passwd {
+	char	*pw_name;		/* user name */
+	char	*pw_passwd;		/* encrypted password */
+	uid_t	pw_uid;			/* user uid */
+	gid_t	pw_gid;			/* user gid */
+	char	*pw_comment;		/* comment */
+	char	*pw_gecos;		/* Honeywell login info */
+	char	*pw_dir;		/* home directory */
+	char	*pw_shell;		/* default shell */
+};
 
 #ifndef __INSIDE_CYGWIN__
-struct group	*getgrgid (gid_t);
-struct group	*getgrnam (const char *);
-int		 getgrnam_r (const char *, struct group *,
-			char *, size_t, struct group **);
-int		 getgrgid_r (gid_t, struct group *,
-			char *, size_t, struct group **);
+struct passwd	*getpwuid (uid_t);
+struct passwd	*getpwnam (const char *);
+int 		 getpwnam_r (const char *, struct passwd *,
+			char *, size_t , struct passwd **);
+int		 getpwuid_r (uid_t, struct passwd *, char *,
+			size_t, struct passwd **);
 #ifndef _POSIX_SOURCE
-struct group	*getgrent (void);
-void		 setgrent (void);
-void		 endgrent (void);
-#ifndef __CYGWIN__
-void		 setgrfile (const char *);
-#endif /* !__CYGWIN__ */
-#ifndef _XOPEN_SOURCE
-#ifndef __CYGWIN__
-char		*group_from_gid (gid_t, int);
-int		 setgroupent (int);
-#endif /* !__CYGWIN__ */
-int		 initgroups (const char *, gid_t);
-#endif /* !_XOPEN_SOURCE */
-#endif /* !_POSIX_SOURCE */
-#endif /* !__INSIDE_CYGWIN__ */
+struct passwd	*getpwent (void);
+void		 setpwent (void);
+void		 endpwent (void);
+#endif
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* !_GRP_H_ */
+#endif /* _PWD_H_ */

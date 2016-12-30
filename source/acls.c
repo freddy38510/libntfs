@@ -54,9 +54,9 @@
 #include <pwd.h>
 #endif
 #ifdef __CELLOS_LV2__
-#include "../defines/cellos_lv2.h"
-#include "includes/grp.h"
-#include "includes/pwd.h"
+#include "defines/cellos_lv2.h"
+#include "grp.h"
+#include "pwd.h"
 uid_t getuid(void);
 gid_t getgid(void);
 #else

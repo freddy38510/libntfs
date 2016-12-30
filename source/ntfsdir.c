@@ -44,7 +44,7 @@
 #include "ntfsdir.h"
 #include "device.h"
 #ifdef __CELLOS_LV2__
-	#include "includes/dirent.h"
+	#include "dirent.h"
 	#else
 	#include <sys/dir.h>
 #endif
