@@ -2,8 +2,7 @@ CELL_SDK ?= /c/cell
 CELL_MK_DIR = $(CELL_SDK)/samples/mk
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
-#PPU_SRCS = main.c
-PPU_SRCS = main_alt.c
+PPU_SRCS = main.c
 PPU_TARGET = libntfs_sample.elf
 
 PPU_INCDIRS = -I../include
