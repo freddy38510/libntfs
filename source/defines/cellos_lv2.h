@@ -3,48 +3,26 @@
 
 // *** sys/stat.h *** //
 
-#define	_IFCHR	0020000	/* character special */
-#define	_IFBLK	0060000	/* block special */
-#define	_IFSOCK	0140000	/* socket */
-#define	_IFIFO	0010000	/* fifo */
-
-#define _IFMT 0170000	/* type of file */
-#define _IFDIR 0040000	/* directory */
-#define _IFREG 0100000	/* regular */
-#define _IFLNK 0120000	/* symbolic link */
-#define _IFWHT 0160000	/* unknown */
-#define _IRWXU 0000700	/* RWX mask for owner */
-#define _IRUSR 0000400	/* R for owner */
-#define _IWUSR 0000200	/* W for owner */
-#define _IXUSR 0000100	/* X for owner */
-#define _IRWXG 0000070	/* RWX mask for group */
-#define _IRGRP 0000040	/* R for group */
-#define _IWGRP 0000020	/* W for group */
-#define _IXGRP 0000010	/* X for group */
-#define _IRWXO 0000007	/* RWX mask for other */
-#define _IROTH 0000004	/* R for other */
-#define _IWOTH 0000002	/* W for other */
-#define _IXOTH 0000001	/* X for other */
-
 #define	S_IFCHR	0020000	/* character special */
 #define	S_IFBLK	0060000	/* block special */
-#define	S_IFSOCK	0140000	/* socket */
+#define	S_IFSOCK 0140000 /* socket */
 #define	S_IFIFO	0010000	/* fifo */
 
-#define	S_ISBLK(m)	(((m)&_IFMT) == _IFBLK)
-#define	S_ISCHR(m)	(((m)&_IFMT) == _IFCHR)
-#define	S_ISDIR(m)	(((m)&_IFMT) == _IFDIR)
-#define	S_ISFIFO(m)	(((m)&_IFMT) == _IFIFO)
-#define	S_ISREG(m)	(((m)&_IFMT) == _IFREG)
-#define	S_ISLNK(m)	(((m)&_IFMT) == _IFLNK)
-#define	S_ISSOCK(m)	(((m)&_IFMT) == _IFSOCK)
+#define	S_ISBLK(m)	(((m)&S_IFMT) == S_IFBLK)
+#define	S_ISCHR(m)	(((m)&S_IFMT) == S_IFCHR)
+#define	S_ISDIR(m)	(((m)&S_IFMT) == S_IFDIR)
+#define	S_ISFIFO(m)	(((m)&S_IFMT) == S_IFIFO)
+#define	S_ISREG(m)	(((m)&S_IFMT) == S_IFREG)
+#define	S_ISLNK(m)	(((m)&S_IFMT) == S_IFLNK)
+#define	S_ISSOCK(m)	(((m)&S_IFMT) == S_IFSOCK)
 
-#define S_IEXEC		S_IXUSR
-#define	S_ISVTX		0001000	/* save swapped text even after use */
-#define	S_IREAD		0000400	/* read permission, owner */
-#define	S_IWRITE 	0000200	/* write permission, owner */
-#define	S_ISGID		0002000	/* set group id on execution */
-#define	S_ISUID		0004000	/* set user id on execution */
+#define	S_ISVTX 0001000
+#define S_ISGID 0002000
+#define	S_ISUID	0004000
+
+#define S_IEXEC S_IXUSR
+#define S_IWRITE S_IWUSR
+#define S_IREAD S_IRUSR
 
 // *** errno.h *** //
 
