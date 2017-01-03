@@ -50,6 +50,8 @@
 
 #define EOPNOTSUPP ENOTSUP
 #define ELOOP EMLINK
+#define EADDRNOTAVAIL EAGAIN
+#define EADDRINUSE EBUSY
 
 // *** sys/synchronization.h *** //
 

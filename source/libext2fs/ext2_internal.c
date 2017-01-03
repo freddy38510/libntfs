@@ -21,9 +21,6 @@
  */
 
 #include <stdlib.h>
-#ifdef __CELLOS_LV2__
-#define __PME__
-#endif
 #include <errno.h>
 #include <string.h>
 #include "ext2_internal.h"
