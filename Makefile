@@ -5,11 +5,12 @@ include $(CELL_MK_DIR)/sdk.makedef.mk
 
 PPU_LIB_TARGET	= libntfs_ext.a
 PPU_INCDIRS = -Iinclude
-PPU_SRCS = $(wildcard source/*.c) $(wildcard source/libext2fs/*.c)
+PPU_SRCS = $(wildcard source/*.c)
+#PPU_SRCS += $(wildcard source/libext2fs/*.c)
 
-DEFINES += -DBIGENDIAN -D__CELLOS_LV2__ -DPS3_GEKKO -DHAVE_CONFIG_H# -DPS3_STDIO# -DDEBUG
+DEFINES += -DBIGENDIAN -D__CELLOS_LV2__ -DPS3_GEKKO -DHAVE_CONFIG_H# -DPS3_STDIO# -DWITH_EXT_SUPPORT
 
-PPU_CFLAGS := -O2 -Wall -mcpu=cell -fno-strict-aliasing $(PPU_INCDIRS) $(DEFINES) -std=gnu99
+PPU_CFLAGS := -Os -Wall -mcpu=cell -fno-strict-aliasing $(PPU_INCDIRS) $(DEFINES) -std=gnu99
 
 include $(CELL_MK_DIR)/sdk.target.mk
 
