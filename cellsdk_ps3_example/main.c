@@ -17,20 +17,14 @@
 
 #include "ntfs.h"
 
-#define PATH_MAX 255
-
 SYS_PROCESS_PARAM(1001, 0x10000)
-int max_list = 0;
-static char buff[4096];
 
+char message[] ="This is a NTFS file test writing";
+char buffer[1024];
+static char buff[4096];
 int LOG;
 
 void log_printf(const char *format, ...);
-void list(const char *path, int depth);
-int NTFS_Event_Mount(int id);
-int NTFS_UnMount(int id);
-void NTFS_UnMountAll(void);
-int NTFS_Test_Device(const char *name);
 
 void log_printf(const char *format, ...)
 {
@@ -45,62 +39,6 @@ void log_printf(const char *format, ...)
 	cellFsWrite(LOG, (const void *) str, (uint64_t)strlen(str), &sw);
 }
 
-void list(const char *path, int depth)
-{
-	DIR_ITER *pdir;
-	struct stat st;
-	char indent[PATH_MAX] = {0};
-	char new_path[PATH_MAX] = {0};
-	char filename[PATH_MAX] = {0};
-	
-
-	// Open the directory
-	pdir = ps3ntfs_diropen(path);
-
-	if (pdir) {
-
-		// Build a directory indent (for better readability)
-		memset(indent, ' ', depth * 2);
-		indent[depth * 2] = 0;
-
-		// List the contents of the directory
-		while (ps3ntfs_dirnext(pdir, filename, &st) == 0) {
-		  
-			if ((strcmp(filename, ".") == 0) || (strcmp(filename, "..") == 0))
-				continue;
-
-			max_list++;
-			if(max_list > 10) break;
-
-			
-			sprintf(new_path, "%s/%s", path, filename);
-			//ps3ntfs_stat(new_path, &st);
-			// List the entry
-			if (S_ISDIR(st.st_mode)) {
-				log_printf(" D %s%s/\n", indent, filename);
-
-				// List the directories contents
-				
-				//list(new_path, depth + 1); // recursive list
-			   
-			} else if (S_ISREG(st.st_mode)) {
-				log_printf(" F %s%s (%lu)\n", indent, filename, (unsigned long int)st.st_size);
-			} else {
-				log_printf(" ? %s%s\n", indent, filename);
-			}
-
-		}
-
-		// Close the directory
-		ps3ntfs_dirclose(pdir);
-
-	} else {
-		log_printf("opendir(%s) failure.\n", path);
-	}
-
-	return;
-}
-
 const DISC_INTERFACE *disc_ntfs[8]= {
 	&__io_ntfs_usb000,
 	&__io_ntfs_usb001,
@@ -112,87 +50,13 @@ const DISC_INTERFACE *disc_ntfs[8]= {
 	&__io_ntfs_usb007
 };
 
-// mounts from /dev_usb000 to 007
-ntfs_md *mounts[8] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-int mountCount[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-int automountCount[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-u32 ports_cnt = 0, old_ports_cnt = 0;
-
-// NOTE: NTFS_Event_Mount() must be in the main loop. Automount count is 300 because 300 / 60 fps = 5 seconds
-// to wait system operations before to mount the device
-
-int NTFS_Event_Mount(int id) 
-{
-	int r = 0;
-
-	ports_cnt &= ~(1<<id);
-	if(PS3_NTFS_IsInserted(id)) ports_cnt |= 1<<id;
-
-	if( ((ports_cnt>>id) & 1) && !((old_ports_cnt>>id) & 1)) automountCount[id] = 300; // enable delay event
-
-	if(automountCount[id]>0) { // if delay counter ticks...
-		automountCount[id]--; if(automountCount[id]==0) r = 1; // mount device
-	}
-
-	if( !((ports_cnt>>id) & 1) && ((old_ports_cnt>>id) & 1)) { // unmount device
-		automountCount[id]=0; r = -1; 
-	}
-
-	old_ports_cnt = ports_cnt;
-
-	return r;
-}
-
-int NTFS_UnMount(int id)
-{
-	int ret = 0;
-
-	if (mounts[id]) {
-		int k;
-		for (k = 0; k < mountCount[id]; k++)
-			if((mounts[id]+k)->name[0]) 
-				{ret = 1; ntfsUnmount((mounts[id]+k)->name, true); (mounts[id]+k)->name[0] = 0;}
-
-		free(mounts[id]); 
-		mounts[id]= NULL;
-		mountCount[id] = 0;
-	}
-	
-	PS3_NTFS_Shutdown(id);
-
-	return ret;
-}
-
-void NTFS_UnMountAll(void)
-{ 
-	int i;
-
-	for(i = 0; i < 8; i++) {
-		NTFS_UnMount(i);
-	}
-}
-
-int NTFS_Test_Device(const char *name)
-{
-	int k, i;
-
-	for(k = 0; k < 8; k++) {
-		for (i = 0; i < mountCount[k]; i++)
-		if(!strncmp((mounts[k]+i)->name, name, 5 - 1 *( name[0] == 'e'))) 
-			return ((mounts[k] + i)->interface->ioType & 0xff) - '0';
-	}
-
-	return -1;
-	
-}
-
-char message[] ="This is a NTFS file test writing";
-char buffer[1024];
-
 int main(void)
 {
 	int ret;
+	int k;
+	int fd;
+	char temp[128];
+	ntfs_md *mounts;
 	
 	ret = cellSysmoduleLoadModule(CELL_SYSMODULE_FS);
 	if (ret != CELL_OK) return ret;
@@ -200,120 +64,241 @@ int main(void)
 	ret = cellFsOpen("/dev_hdd0/libntfs_sample_log.txt",
                      CELL_FS_O_RDWR|CELL_FS_O_CREAT, &LOG, NULL, 0);
 	if(ret) return ret;
-	
-	const char *cur_device = "/ntfs0:";
-	char path[1024];
-	int i, k, r;
-	
-	for(k = 0; k < 8; k++) {
-		for (i = 0; i < mountCount[k]; i++)
-		log_printf("%i - %s:/ (%s) (from usb00%i)\n", i + 1, 
-		(mounts[k]+i)->name, ntfsGetVolumeName((mounts[k] + i)->name), 
-			((mounts[k] + i)->interface->ioType & 0xff) - '0');
-	}
-
-	cur_device = NULL;
-	r = NTFS_Test_Device("ext0"); log_printf("\nTest ext0 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ext0:";
-
-	r = NTFS_Test_Device("ext1"); log_printf("Test ext1 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ext1:";
-
-	r = NTFS_Test_Device("ext2"); log_printf("Test ext2 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ext2:";
-
-	r = NTFS_Test_Device("ext3"); log_printf("Test ext3 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ext3:";
-
-	r = NTFS_Test_Device("ntfs0"); log_printf("Test ntfs0 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ntfs0:";
-
-	r = NTFS_Test_Device("ntfs1"); log_printf("Test ntfs1 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ntfs1:";
-
-	r = NTFS_Test_Device("ntfs2"); log_printf("Test ntfs2 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ntfs2:";
-
-	r = NTFS_Test_Device("ntfs3"); log_printf("Test ntfs3 %i\n" , r);
-	if(r>=0 && !cur_device) cur_device = "/ntfs3:";
-
-	if(!cur_device) cur_device = "/ntfs0:"; // by default
-
-	for(i = 0; i < 8 ; i++) {
-		r = NTFS_Event_Mount(i);
-
-		if(r == 1) { // mount device
-
-			NTFS_UnMount(i);
-
-			mounts[i] = NULL;
-			mountCount[i] = 0;
-
-			mountCount[i] = ntfsMountDevice (disc_ntfs[i], &mounts[i], NTFS_DEFAULT | NTFS_RECOVER);
-			
-		} else if(r == -1) { // unmount device
-			NTFS_UnMount(i);
-		}
-	}
-
-
-	max_list = 0;
-
-	log_printf("Listing 10 entries from %s (5 seconds)\n", cur_device);
-
-	sprintf(path, "%s", cur_device);
-
-	list(path, 0);
-
-	log_printf("\n\nWriting / Reading a file from %s\n", cur_device);
-
-	sprintf(path, "%s/0text", cur_device);
-
-	ps3ntfs_mkdir(path, 0777);
-
-	sprintf(path, "%s/0text/test.txt", cur_device);
-
-	int fd= ps3ntfs_open(path, O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		
+	log_printf("*** LOG ***\n");
+	
+	log_printf("\n*** PS3_NTFS_IsInserted ***\n\n");
+	for(k = 0; k < 8; k++) {
+		if(PS3_NTFS_IsInserted(k)) log_printf("- PS3_NTFS_IsInserted(%d) = true\n", k);
+		else log_printf("- PS3_NTFS_IsInserted(%d) = false\n", k);
+	}
+	
+	log_printf("\n*** ntfsFindPartitions ***\n");
+	sec_t *partitions = NULL;
+	int partition_number = ntfsFindPartitions(disc_ntfs[0], &partitions);
+	log_printf("- ntfsFindPartitions = %d\n", partition_number);
+	
+	log_printf("\n*** ntfsMount ***\n");
+	
+	if(ntfsMount("ntfs0", disc_ntfs[0], partitions[0], CACHE_DEFAULT_PAGE_COUNT, CACHE_DEFAULT_PAGE_SIZE, NTFS_DEFAULT | NTFS_RECOVER))
+		log_printf("- ntfsMount = true\n");
+	else
+		log_printf("- ntfsMount = false\n");
+	
+	if(partitions) free(partitions);
+	
+	log_printf("\n*** ntfsUnmount ***\n");
+	ntfsUnmount("ntfs0", 1);
+	
+	log_printf("\n*** ntfsMountDevice ***\n");	
+	ret = ntfsMountDevice(disc_ntfs[0], &mounts, NTFS_DEFAULT | NTFS_RECOVER);
+	log_printf("- ntfsMountDevice = %d\n", ret);
+	log_printf("- mount->name = %s\n", mounts->name);
+	
+	log_printf("\n*** ntfsUnmount ***\n");
+	ntfsUnmount(mounts->name, 1);
+	
+	log_printf("\n*** ntfsMountAll ***\n");
+	int mountCount = ntfsMountAll(&mounts, NTFS_DEFAULT | NTFS_RECOVER );
+	log_printf("- ntfsMountAll = %d\n", mountCount);
+	log_printf("- mount[0].name = %s\n", mounts[0].name);
+	
+	log_printf("\n*** ntfsGetVolumeName ***\n");
+	const char *OldName = ntfsGetVolumeName(mounts[0].name);
+	if(OldName) log_printf("- Old name : '%s'\n", OldName);
+	else log_printf("- Error %d\n", ps3ntfs_errno());
+	
+	/* need to re-mount the device after SetVolumeName to 'update' the value of GetVolumeName
+	log_printf("\n*** ntfsSetVolumeName ***\n");
+	if(ntfsSetVolumeName(mounts[0].name, "NTFS_VOLUME"))
+		log_printf("- ntfsSetVolumeName = true\n");
+	else
+		log_printf("- ntfsSetVolumeName = false - %d \n", ps3ntfs_errno());
+	
+	const char *NewName = ntfsGetVolumeName(mounts[0].name);
+	if(NewName) log_printf("- New name : '%s'\n", NewName);
+	else log_printf("- Error %d\n", ps3ntfs_errno());
+	*/
+	
+	log_printf("\n*** ps3ntfs_mkdir ***\n");
+	
+	sprintf(temp, "%s:/viper", mounts[0].name);
+	if(ps3ntfs_mkdir(temp, 0777) == 0)
+		log_printf("- ps3ntfs_mkdir = true\n");
+	else 
+		log_printf("- ps3ntfs_mkdir = false\n");
+		
+	log_printf("\n*** ps3ntfs_open ***\n");
+	strcat(temp, (char*) "/ntfs.txt");
+	
+	for(k=0; k<5000; k++) { // force
+		fd = ps3ntfs_open(temp, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+		if(fd>0) break;
+	}
+	
 	if(fd > 0) {
-		i = ps3ntfs_write(fd, message, strlen(message));
-
-		if(i != (int) strlen(message)) log_printf("Error writing the file!\n");
-
-		ps3ntfs_close(fd);
-
-
-	} else log_printf("Error creating the file!\n");
-
-	memset(buffer, 0, 1024);
-
-	sprintf(path, "%s/0text/test.txt", cur_device);
-
-	fd= ps3ntfs_open(path, O_RDONLY, 0);
-		   
+		log_printf("- ps3ntfs_open = success\n");
+		
+		log_printf("\n*** ps3ntfs_write ***\n");
+		ret = ps3ntfs_write(fd, message, strlen(message));
+		log_printf("- ps3ntfs_write = %d\n", ret);
+		if(ret != (int) strlen(message)) log_printf("- Error writing the file!\n");
+		
+		log_printf("\n*** ps3ntfs_close ***\n");
+		ret = ps3ntfs_close(fd);
+		log_printf("- ps3ntfs_close = %d\n", ret);
+	} else log_printf("- ps3ntfs_open = failed - %s\n", temp);
+	
+	struct stat st;
+	
+	log_printf("\n*** ps3ntfs_stat ***\n");
+	
+	ret = ps3ntfs_stat(temp, &st);
+	log_printf("- ps3ntfs_stat = %d\n", ret);
+	log_printf("- SIZE = %d\n", st.st_size);
+	
+	log_printf("\n*** ps3ntfs_open ***\n");
+	for(k=0; k<5000; k++) { // force
+		fd = ps3ntfs_open(temp, O_RDONLY, 0);
+		if(fd > 0) break;
+	}
+	log_printf("- ps3ntfs_open = %d\n", fd);
 	if(fd > 0) {
-
+	
+		log_printf("- ps3ntfs_open = success\n");
+		
+		log_printf("\n*** ps3ntfs_fstat ***\n");
+	
+		ret = ps3ntfs_fstat(fd, &st);
+		log_printf("- ps3ntfs_fstat = %d\n", ret);
+		log_printf("- SIZE = %d\n", st.st_size);
+		
+		log_printf("\n*** ps3ntfs_seek ***\n");
+		
 		int size = ps3ntfs_seek(fd, 0, SEEK_END);
 
-		log_printf ("Size of file %i\n", size);
+		log_printf("- ps3ntfs_seek - size = %d\n", size);
 
 		ps3ntfs_seek(fd, 0, SEEK_SET);
 		
-		i = ps3ntfs_read(fd, buffer, size);
+		log_printf("\n*** ps3ntfs_read ***\n");
+		ret = ps3ntfs_read(fd, buffer, size);
+		log_printf("- ps3ntfs_read : '%s'\n", buffer);
+		if(ret != size) log_printf("Error reading the file!\n"); 
+		
+		log_printf("\n*** ps3ntfs_close ***\n");
+		ret = ps3ntfs_close(fd);
+		log_printf("- ps3ntfs_close = %d\n", ret);
 
-		if(i != size) log_printf("Error reading the file!\n");
-
-		ps3ntfs_close(fd);
-
-	} else log_printf("Error Reading the file!\n");
-
-	log_printf("Readed From file: %s\n\n", buffer);
+	} else log_printf("- ps3ntfs_open = failed - %s\n", temp);
+		
+	sprintf(buffer, "%s:/viper/ntfs_newname.txt", mounts[0].name);
+	log_printf("\n*** ps3ntfs_rename ***\n");
+	for(k=0; k<5000; k++) { // force
+		ret = ps3ntfs_rename(temp, buffer);
+		if(ret==0) break;
+	}
+	if(ret==0) log_printf("- ps3ntfs_rename = %d\n", ret);
+	else log_printf("- ps3ntfs_rename = %d - %s > %s\n", ret, temp, buffer);
 	
-	log_printf("Umounting...");
- 
-	NTFS_UnMountAll();
+	DIR_ITER *pdir;
+	char filename[255];
 	
-	log_printf("OK\n");
+	log_printf("\n*** ps3ntfs_diropen ***\n");
+	sprintf(temp, "%s:/viper", mounts[0].name);
+	
+	for(k=0; k<5000; k++) { // force
+		pdir = ps3ntfs_diropen(temp);
+		if (pdir) break;
+	}
+	if (pdir) {
+		log_printf("- ps3ntfs_diropen = success\n");
+		
+		log_printf("\n*** ps3ntfs_dirnext ***\n");
+		
+		while (ps3ntfs_dirnext(pdir, filename, &st) == 0) {
+		  
+			if ((strcmp(filename, ".") == 0) || (strcmp(filename, "..") == 0)) continue;
+			
+			log_printf("- ps3ntfs_dirnext = File : %s/\n", filename);
+
+		}
+		
+		log_printf("\n*** ps3ntfs_dirreset ***\n");
+		ret = ps3ntfs_dirreset(pdir);
+		log_printf("- ps3ntfs_dirreset = %d\n", ret);
+		
+		log_printf("\n*** ps3ntfs_dirclose ***\n");
+		ret = ps3ntfs_dirclose(pdir);
+		log_printf("- ps3ntfs_dirclose = %d\n", ret);
+
+	} else log_printf("- ps3ntfs_diropen = failed\n");
+	
+	log_printf("\n*** ps3ntfs_open ***\n");
+	strcat(temp, (char*)"/unlink.txt");
+	for(k=0; k<5000; k++) { // force
+		fd = ps3ntfs_open(temp, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+		if(fd > 0) break;
+	}
+	if(fd > 0) {
+		log_printf("- ps3ntfs_open = success\n");
+		
+		log_printf("\n*** ps3ntfs_close ***\n");
+		ret = ps3ntfs_close(fd);
+		log_printf("- ps3ntfs_close = %d\n", ret);
+		
+	} else log_printf("- ps3ntfs_open = failed\n");
+	
+	log_printf("\n*** ps3ntfs_unlink ***\n");
+	for(k=0; k<5000; k++) { // force
+		ret = ps3ntfs_unlink(temp);
+		if(ret==0) break;
+	}
+	log_printf("- ps3ntfs_unlink = %d\n", ret);
+	
+	log_printf("\n*** ntfsUnmount ***\n");
+	for (k = 0; k < mountCount; k++) ntfsUnmount(mounts[k].name, 1);
+	
+	log_printf("\n*** PS3_NTFS_Shutdown ***\n\n");
+	for(k = 0; k < 8; k++) {
+		if(PS3_NTFS_Shutdown(k)) log_printf("- PS3_NTFS_Shutdown(%d) = true\n", k);
+		else log_printf("- PS3_NTFS_Shutdown(%d) = false\n", k);
+	}
+	
+	/*
+	TODO
+	int ps3ntfs_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_out, int max, int phys);
+	int ps3ntfs_get_fd_from_FILE(FILE *fp);
+	s64 ps3ntfs_seek64(int fd, s64 pos, int dir);
+	int ps3ntfs_link(const char *existing, const char  *newLink);
+	
+	int ps3ntfs_statvfs(const char *path, struct statvfs *buf);
+	int ps3ntfs_ftruncate(int fd, off_t len);
+	int ps3ntfs_fsync(int fd);
+	
+	void NTFS_init_system_io(void);
+	void NTFS_deinit_system_io(void);
+	
+	Standard functions supported:
+	
+	open_r -> for stdio.h fopen()...
+	close_r -> for stdio.h fclose()...
+	read_r -> for stdio.h fread()...
+	write_r -> for stdio.h fwrite()...
+	lseek_r -> for stdio.h fseek()...
+	lseek64_r -> for using with large files (see ps3_example_stdio for this)
+	fstat_r -> for stat.h fstat()
+	stat_r -> for stat.h stat()
+
+	ftruncate_r -> for unistd.h ftruncate()
+	truncate_r -> for unistd.h truncate()
+	fsync_r -> for stdio.h fflush()
+	link_r -> for unistd.h link()
+	unlink_r -> for unistd.h unlink()
+	rename_r -> for stdio.h rename()
+	mkdir_r -> for stat.h mkdir()
+	rmdir_r -> for unistd.h rmdir()
+	*/
 	
 	cellFsClose(LOG);
 	

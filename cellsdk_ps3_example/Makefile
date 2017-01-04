@@ -2,8 +2,8 @@ CELL_SDK ?= /c/cell
 CELL_MK_DIR = $(CELL_SDK)/samples/mk
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
-#PPU_SRCS = main.c
-PPU_SRCS = main_alt.c
+PPU_SRCS = main.c
+#PPU_SRCS = main_alt.c
 PPU_TARGET = libntfs_sample.elf
 
 PPU_INCDIRS = -I../include
@@ -17,7 +17,7 @@ ifeq ($(shell uname), Linux)
 	MODELF = wine modElf
 else
 	PACKAGER = psn_package_npdrm$(EXE_SUFFIX)
-	MODEFL = modELF
+	MODELF = modELF$(EXE_SUFFIX)
 endif
 
 PKG_CONFIG = package.conf
