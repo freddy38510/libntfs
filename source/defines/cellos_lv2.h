@@ -57,6 +57,10 @@
 #define lv2syscall7 system_call_7
 #define lv2syscall8 system_call_8
 
+// *** sys/fs_external.h *** //
+
+//#define FS_S_IFMT CELL_FS_S_IFMT
+
 // *** cell/fs/cell_fs_file_api.h *** //
 
 #define sysFSStat CellFsStat

@@ -34,11 +34,11 @@ void log_printf(const char *format, ...)
 {
 	char *str = (char *) buff;
 	va_list	opt;
-	
+
 	va_start(opt, format);
 	vsprintf( (void *) buff, format, opt);
 	va_end(opt);
-	
+
 	uint64_t sw;
 	cellFsWrite(LOG, (const void *) str, (uint64_t)strlen(str), &sw);
 }
@@ -63,10 +63,10 @@ char buffer[1024];
 int main(int32_t argc, const char* argv[])
 {
 	int ret;
-	
+
 	ret = cellSysmoduleLoadModule(CELL_SYSMODULE_FS);
 	if (ret != CELL_OK) return ret;
-	
+
 	ret = cellFsOpen("/dev_hdd0/libntfs_sample_log.txt",
                      CELL_FS_O_RDWR|CELL_FS_O_CREAT, &LOG, NULL, 0);
 	if(ret) return ret;
@@ -80,9 +80,12 @@ int main(int32_t argc, const char* argv[])
 	log_printf("\n\nWriting to ntfs0");
 	ps3ntfs_open("ntfs0:/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
 
+	// FAT operation  to write (from internal device)
+	log_printf("\n\nWriting to usb000");
+	ps3ntfs_open("/dev_usb000/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
 
 	log_printf("\n\nUnmounting...");
 	for (uint8_t u = 0; u < mountCount; u++) ntfsUnmount(mounts[u].name, 1);
-	
+
 	return 0;
 }
