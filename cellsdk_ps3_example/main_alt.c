@@ -75,14 +75,32 @@ int main(int32_t argc, const char* argv[])
 	mountCount = ntfsMountAll(&mounts, NTFS_DEFAULT | NTFS_RECOVER /* | NTFS_READ_ONLY */ );
 	if (mountCount <= 0) 	log_printf("\n\nCan't mount");
 
-	// NTFS operation to write
+	int r;
 
+	// NTFS operation to write
 	log_printf("\n\nWriting to ntfs0");
-	ps3ntfs_open("ntfs0:/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	r = ps3ntfs_open("ntfs0:/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	log_printf(" : %d", r);
 
 	// FAT operation  to write (from internal device)
 	log_printf("\n\nWriting to usb000");
-	ps3ntfs_open("/dev_usb000/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	r = ps3ntfs_open("/dev_usb000/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	log_printf(" : %d", r);
+
+	// FAT failed operation usb000
+	log_printf("\n\nWriting to wrong path in usb000");
+	r = ps3ntfs_open("/dev_usb000/blurps/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	log_printf(" : %d", r);
+
+	// FAT operation  to write (from internal device)
+	log_printf("\n\nWriting to hdd0");
+	r = ps3ntfs_open("/dev_hdd0/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	log_printf(" : %d", r);
+
+	// NTFS failed operation
+	log_printf("\n\nWriting to wrong path in ntfs0");
+	r = ps3ntfs_open("ntfs0:/blurps/text.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	log_printf(" : %d", r);
 
 	log_printf("\n\nUnmounting...");
 	for (uint8_t u = 0; u < mountCount; u++) ntfsUnmount(mounts[u].name, 1);

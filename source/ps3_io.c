@@ -696,7 +696,7 @@ int ps3ntfs_open(const char *path, int flags, int mode)
 
 	#ifdef __CELLOS_LV2__
         CellFsErrno ret = sysLv2FsOpen(path, flag,&fd,NULL,0);
-        if(ret < 0) {my_files[m] = 0; reent1._errno = ret; sysLwMutexUnlock(&ps3ntfs_lock); return -ret;}
+        if(ret < 0) {my_files[m] = 0; reent1._errno = ret; sysLwMutexUnlock(&ps3ntfs_lock); return ret;}
 	#else
 	int ret = sysLv2FsOpen(path, flag,&fd,mode,NULL,0);
         if(ret < 0) {my_files[m] = 0; reent1._errno = lv2error(ret); sysLwMutexUnlock(&ps3ntfs_lock); return -lv2error(ret);}
@@ -774,7 +774,7 @@ int ps3ntfs_write(int fd, const char *ptr, size_t len)
         u64 by;
 	#ifdef __CELLOS_LV2__
         CellFsErrno r = sysLv2FsWrite(fs->pos, (const void*) ptr, len, &by);
-        if(r>=0) r = (int) by; else {reent1._errno = r; r = -r;}
+        if(r>=0) r = (int) by; else {reent1._errno = r;}
 	#else
 	int r;
         r = sysLv2FsWrite(fs->pos, (const void*) ptr, len, &by);
@@ -800,7 +800,7 @@ int ps3ntfs_read(int fd, char *ptr, size_t len)
         u64 by;
 	#ifdef __CELLOS_LV2__
         CellFsErrno r = sysLv2FsRead(fs->pos, (void*) ptr, len, &by);
-        if(r>=0) r = (int) by; else {reent1._errno = r; r = -r;}
+        if(r>=0) r = (int) by; else {reent1._errno = r;}
 	#else
 	int r;
 	r = sysLv2FsRead(fs->pos, (void*) ptr, len, &by);
@@ -827,7 +827,7 @@ off_t  ps3ntfs_seek(int fd, off_t pos, int dir)
 
 	#ifdef __CELLOS_LV2__
         CellFsErrno r = sysLv2FsLSeek64(fs->pos, (s64) pos, dir, &by);
-        if(r>=0) r = (int) by; else {reent1._errno = r; r = -r;}
+        if(r>=0) r = (int) by; else {reent1._errno = r;}
 	#else
     	int r;
         r = sysLv2FsLSeek64(fs->pos, (s64) pos, dir, &by);
@@ -855,7 +855,7 @@ s64  ps3ntfs_seek64(int fd, s64 pos, int dir)
 
 	#ifdef __CELLOS_LV2__
         CellFsErrno r = sysLv2FsLSeek64(fs->pos, (s64) pos, dir, &by);
-        if(r>=0) r = (s64) by; else {reent1._errno = r; r = -r;}
+        if(r>=0) r = (s64) by; else {reent1._errno = r;}
 	#else
     	s64 r;
         r = sysLv2FsLSeek64(fs->pos, (s64) pos, dir, &by);
@@ -902,7 +902,7 @@ int ps3ntfs_fstat(int fd, struct stat *st)
 	    #endif
 	    if(!r && st) convertLv2Stat(st,&stat);
 	#ifdef __CELLOS_LV2__
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         if(r < 0) {reent1._errno = lv2error(r); r = -lv2error(r);}
 	#endif
@@ -930,7 +930,7 @@ int ps3ntfs_stat(const char *file, struct stat *st)
 	    #endif
 	    if(!r && st) convertLv2Stat(st,&stat);
 	#ifdef __CELLOS_LV2__
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         if(r < 0) {reent1._errno = lv2error(r); r = -lv2error(r);}
 	#endif
@@ -959,7 +959,7 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
 
 	#ifdef __CELLOS_LV2__
 	CellFsErrno r = sysLv2FsLink(existing, newLink);
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         int r;
 	r = sysLv2FsLink(existing, newLink);
@@ -1060,7 +1060,7 @@ int ps3ntfs_rename(const char *oldName, const char *newName)
 
 	#ifdef __CELLOS_LV2__
 	CellFsErrno r = sysLv2FsRename(oldName, newName);
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         int r;
 	r = sysLv2FsRename(oldName, newName);
@@ -1092,7 +1092,7 @@ int ps3ntfs_mkdir(const char *path, int mode)
 
 	#ifdef __CELLOS_LV2__
 	CellFsErrno r = sysLv2FsMkdir(path, mode);
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         int r;
 	r = sysLv2FsMkdir(path, UMASK(mode));
@@ -1275,7 +1275,7 @@ int ps3ntfs_dirnext(DIR_ITER *dirState, char *filename, struct stat *filestat)
         }
 
 	#ifdef __CELLOS_LV2__
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         if(r < 0) {reent1._errno = lv2error(r); r = -lv2error(r);}
 	#endif
@@ -1300,7 +1300,7 @@ int ps3ntfs_dirclose(DIR_ITER *dirState)
 
 	#ifdef __CELLOS_LV2__
         CellFsErrno r = sysLv2FsCloseDir(dopen->fd);
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         r = sysLv2FsCloseDir(dopen->fd);
         if(r < 0) {reent1._errno = lv2error(r); r = -lv2error(r);}
@@ -1354,7 +1354,7 @@ int ps3ntfs_ftruncate(int fd, off_t len)
 
 	#ifdef __CELLOS_LV2__
 	CellFsErrno r= sysLv2FsFtruncate(fs->pos, (u64) len);
-        if(r < 0) {reent1._errno = r; r = -r;}
+        if(r < 0) {reent1._errno = r;}
 	#else
         int r;
 	r= sysLv2FsFtruncate(fs->pos, (u64) len);
@@ -1380,7 +1380,7 @@ int ps3ntfs_fsync(int fd)
 
 	#ifdef __CELLOS_LV2__
 	CellFsErrno r = sysLv2FsFsync(fs->pos);
-	if(r < 0) {reent1._errno = r; r = -r;}
+	if(r < 0) {reent1._errno = r;}
 	#else
     	int r;
 	r = sysLv2FsFsync(fs->pos);
