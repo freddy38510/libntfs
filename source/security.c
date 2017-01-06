@@ -48,9 +48,6 @@
 #include <sys/stat.h>
 #endif
 #include <unistd.h>
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
 #ifdef __CELLOS_LV2__
 #include "defines/cellos_lv2.h"
 #include "grp.h"
@@ -58,6 +55,9 @@
 uid_t getuid(void);
 gid_t getgid(void);
 #else
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
 #include <grp.h>
 #endif
 
