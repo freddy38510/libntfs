@@ -674,7 +674,7 @@ int ps3ntfs_open(const char *path, int flags, int mode)
 
     if(!is_ntfs) {
 	//return -1;
-//#if 0
+#if 0
         int flag = flags&(O_ACCMODE|SYS_O_MSELF);
         int fd;
 
@@ -711,7 +711,7 @@ int ps3ntfs_open(const char *path, int flags, int mode)
         sysLwMutexUnlock(&ps3ntfs_lock);
 
         return (int) (s64) (s32) &file_state[m];
-//#endif
+#endif
     }
 
     ret = devoptab_list[n]->open_r(&reent1, (void *) &file_state[m], path, flags, mode);
@@ -736,7 +736,7 @@ int ps3ntfs_close(int fd)
 
     int r = NULL;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
     if(fs->flags & 0x1000000) { // is system device
 	#ifdef __CELLOS_LV2__
@@ -748,7 +748,7 @@ int ps3ntfs_close(int fd)
 	#endif
         if(r < 0) r = -1;
     } else
-//#endif
+#endif
         r = devoptab_list[get_dev(fd)]->close_r(&reent1, fd);
 
     int m;
@@ -768,7 +768,7 @@ int ps3ntfs_write(int fd, const char *ptr, size_t len)
 
     reent1._errno = 0;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
     if(fs->flags & 0x1000000) { // is system device
         u64 by;
@@ -782,7 +782,7 @@ int ps3ntfs_write(int fd, const char *ptr, size_t len)
 	#endif
         return r;
     }
-//#endif
+#endif
 
     return devoptab_list[get_dev(fd)]->write_r(&reent1, fd, ptr, len);
 
@@ -794,7 +794,7 @@ int ps3ntfs_read(int fd, char *ptr, size_t len)
 
     reent1._errno = 0;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
     if(fs->flags & 0x1000000) { // is system device
         u64 by;
@@ -808,7 +808,7 @@ int ps3ntfs_read(int fd, char *ptr, size_t len)
 	#endif
         return r;
     }
-//#endif
+#endif
     return devoptab_list[get_dev(fd)]->read_r(&reent1, fd, ptr, len);
 
 }
@@ -819,7 +819,7 @@ off_t  ps3ntfs_seek(int fd, off_t pos, int dir)
 
     reent1._errno = 0;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
 
     if(fs->flags & 0x1000000) { // is system device
@@ -835,7 +835,7 @@ off_t  ps3ntfs_seek(int fd, off_t pos, int dir)
 	#endif
         return r;
     }
-//#endif
+#endif
 
     return devoptab_list[get_dev(fd)]->seek_r(&reent1, fd, pos, dir);
 
@@ -847,7 +847,7 @@ s64  ps3ntfs_seek64(int fd, s64 pos, int dir)
 
     reent1._errno = 0;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
 
     if(fs->flags & 0x1000000) { // is system device
@@ -863,11 +863,11 @@ s64  ps3ntfs_seek64(int fd, s64 pos, int dir)
 	#endif
         return r;
     }
-//#endif
+#endif
     return devoptab_list[get_dev(fd)]->seek64_r(&reent1, fd, pos, dir);
 
 }
-//#if 0
+#if 0
 static void convertLv2Stat(struct stat *dst,sysFSStat *src)
 {
 	memset(dst,0,sizeof(struct stat));
@@ -881,13 +881,13 @@ static void convertLv2Stat(struct stat *dst,sysFSStat *src)
 	dst->st_blksize = src->st_blksize;
 
 }
-//#endif
+#endif
 
 int ps3ntfs_fstat(int fd, struct stat *st)
 {
     if(fd < 0) return -1;
 
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
 
 
@@ -908,7 +908,7 @@ int ps3ntfs_fstat(int fd, struct stat *st)
 	#endif
         return r;
     }
-//#endif
+#endif
     reent1._errno = 0;
 
     return devoptab_list[get_dev(fd)]->fstat_r(&reent1, fd, st);
@@ -917,7 +917,7 @@ int ps3ntfs_fstat(int fd, struct stat *st)
 
 int ps3ntfs_stat(const char *file, struct stat *st)
 {
-//#if 0
+#if 0
     if(strncmp(file, "ntfs", 4) && strncmp(file, "/ntfs", 5) &&
         strncmp(file, "ext", 3) && strncmp(file, "/ext", 4)) { // file system
         int r;
@@ -936,7 +936,7 @@ int ps3ntfs_stat(const char *file, struct stat *st)
 	#endif
         return r;
     }
-//#endif
+#endif
 
     reent1._errno = 0;
 
@@ -953,7 +953,7 @@ int ps3ntfs_stat(const char *file, struct stat *st)
 
 int ps3ntfs_link(const char *existing, const char  *newLink)
 {
-//#if 0
+#if 0
     if(strncmp(newLink, "ntfs", 4) && strncmp(newLink, "/ntfs", 5) &&
         strncmp(newLink, "ext", 3) && strncmp(newLink, "/ext", 4)) { // file system
 
@@ -967,7 +967,7 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
 	#endif
         return r;
     }
-//#endif
+#endif
     reent1._errno = 0;
 
     if(existing[0]=='/') existing++;
@@ -985,7 +985,7 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
 
 int ps3ntfs_unlink(const char *name)
 {
-//#if 0
+#if 0
     if(strncmp(name, "ntfs", 4) && strncmp(name, "/ntfs", 5) &&
         strncmp(name, "ext", 3) && strncmp(name, "/ext", 4)) { // file system
         sysFSStat stat;
@@ -1010,7 +1010,7 @@ int ps3ntfs_unlink(const char *name)
 	#endif
         return r;
     }
-//#endif
+#endif
     reent1._errno = 0;
 
     if(name[0]=='/') name++;
@@ -1054,7 +1054,7 @@ int ps3ntfs_chdir(const char *name)
 
 int ps3ntfs_rename(const char *oldName, const char *newName)
 {
-//#if 0
+#if 0
     if(strncmp(newName, "ntfs", 4) && strncmp(newName, "/ntfs", 5) &&
         strncmp(newName, "ext", 3) && strncmp(newName, "/ext", 4)) { // file system
 
@@ -1068,7 +1068,7 @@ int ps3ntfs_rename(const char *oldName, const char *newName)
 	#endif
         return r;
     }
-//#endif
+#endif
     reent1._errno = 0;
 
     if(oldName[0]=='/') oldName++;
@@ -1086,7 +1086,7 @@ int ps3ntfs_rename(const char *oldName, const char *newName)
 
 int ps3ntfs_mkdir(const char *path, int mode)
 {
-//#if 0
+#if 0
     if(strncmp(path, "ntfs", 4) && strncmp(path, "/ntfs", 5) &&
         strncmp(path, "ext", 3) && strncmp(path, "/ext", 4)) { // file system
 
@@ -1100,7 +1100,7 @@ int ps3ntfs_mkdir(const char *path, int mode)
 	#endif
         return r;
     }
-//#endif
+#endif
     reent1._errno = 0;
 
     if(path[0]=='/') path++;
@@ -1147,7 +1147,7 @@ struct dopendir {
 DIR_ITER*  ps3ntfs_diropen(const char *path)
 {
     int n = 1;
-//#if 0
+#if 0
     if(strncmp(path, "ntfs", 4) && strncmp(path, "/ntfs", 5) &&
         strncmp(path, "ext", 3) && strncmp(path, "/ext", 4)) { // file system
         s32 fd;
@@ -1187,7 +1187,7 @@ DIR_ITER*  ps3ntfs_diropen(const char *path)
 
         return NULL;
     }
-//#endif
+#endif
     if(path[0]=='/') path++;
 
     for(n = 0; n < 33; n++) {
@@ -1238,7 +1238,7 @@ int ps3ntfs_dirnext(DIR_ITER *dirState, char *filename, struct stat *filestat)
 
     reent1._errno = 0;
 
-//#if 0
+#if 0
     if(dirState->device & 0x1000000) {
         struct dopendir * dopen = dirState->dirStruct;
 
@@ -1282,7 +1282,7 @@ int ps3ntfs_dirnext(DIR_ITER *dirState, char *filename, struct stat *filestat)
 
         return r;
     }
-//#endif
+#endif
     return devoptab_list[dirState->device]->dirnext_r(&reent1, dirState, filename, filestat);
 
 }
@@ -1293,7 +1293,7 @@ int ps3ntfs_dirclose(DIR_ITER *dirState)
 
     reent1._errno = 0;
     int r = NULL;
-//#if 0
+#if 0
 
     if(dirState->device & 0x1000000) {
         struct dopendir * dopen = dirState->dirStruct;
@@ -1307,7 +1307,7 @@ int ps3ntfs_dirclose(DIR_ITER *dirState)
 	#endif
 
     } else
-//#endif
+#endif
         r = devoptab_list[dirState->device]->dirclose_r(&reent1, dirState);
 
     free(dirState); dirState = NULL;
@@ -1345,7 +1345,7 @@ int ps3ntfs_ftruncate(int fd, off_t len)
     if(fd < 0) return -1;
 
     reent1._errno = 0;
-//#if 0
+#if 0
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
 
 
@@ -1362,7 +1362,7 @@ int ps3ntfs_ftruncate(int fd, off_t len)
 	#endif
         return r;
     }
-//#endif
+#endif
     return devoptab_list[get_dev(fd)]->ftruncate_r(&reent1, fd, len);
 
 }
@@ -1372,7 +1372,7 @@ int ps3ntfs_fsync(int fd)
     if(fd < 0) return -1;
 
     reent1._errno = 0;
-//#if 0
+#if 0
 
     ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
 
@@ -1388,7 +1388,7 @@ int ps3ntfs_fsync(int fd)
 	#endif
         return r;
     }
-//#endif
+#endif
     return devoptab_list[get_dev(fd)]->fsync_r(&reent1, fd);
 
 }
