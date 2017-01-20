@@ -14,9 +14,7 @@
 #include "ext2fs.h"
 #include "ext2fsP.h"
 
-#ifdef __CELLOS_LV2__
 char *getenv (__const char *__name);
-#endif
 
 static char spaces[80], backspaces[80];
 

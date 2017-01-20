@@ -47,13 +47,9 @@
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
 
-#ifdef __CELLOS_LV2__
-	#include <sys/synchronization.h>
-	#include <sys/ppu_thread.h>
-	#include "defines/cellos_lv2.h"
-	#else
-	#include <lv2/mutex.h>
-#endif
+#include <sys/synchronization.h>
+#include <sys/ppu_thread.h>
+#include "defines/cellos_lv2.h"
 
 #include "ntfs.h"
 #include "iosupport.h"

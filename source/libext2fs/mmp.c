@@ -18,12 +18,9 @@
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef __CELLOS_LV2__
+
 #include "../sys_time.h"
 pid_t getpid(void);
-#else
-#include <sys/time.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -46,10 +46,6 @@
 #include <sys/sysmacros.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "compat.h"
 #include "types.h"
 #include "debug.h"
@@ -713,7 +709,7 @@ static char *ntfs_get_rellink(ntfs_inode *ni, ntfschar *junction, int count)
  *
  *	returns the target converted to a relative path, or NULL
  *		if some error occurred, as described by errno
- *		errno is EOPNOTSUPP if the reparse point is not a valid
+ *		errno is ENOTSUP if the reparse point is not a valid
  *			symbolic link or directory junction
  */
 
@@ -815,7 +811,7 @@ char *ntfs_make_symlink(ntfs_inode *ni, const char *mnt_point,
 	}
 	*pattr_size = attr_size;
 	if (bad)
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 	return (target);
 }
 
@@ -1144,7 +1140,7 @@ int ntfs_set_ntfs_reparse_data(ntfs_inode *ni,
 						}
 						NInoSetDirty(ni);
 					} else {
-						errno = EOPNOTSUPP;
+						errno = ENOTSUP;
 						res = -1;
 					}
 				} else {

@@ -21,12 +21,8 @@
 #ifndef EXT2_INTERNAL_H_
 #define EXT2_INTERNAL_H_
 
-#ifdef __CELLOS_LV2__
 #include <sys/synchronization.h>
-#include "../defines/cellos_lv2.h"
-#else
-#include <lv2/mutex.h>
-#endif
+
 #include "../ext2.h"
 #include "../iosupport.h"
 
@@ -77,14 +73,14 @@ typedef enum {
 static inline void ext2Lock (ext2_vd *vd)
 {
     //LWP_MutexLock(vd->lock);
-    sysLwMutexLock(&vd->lock, 0);
+    sys_lwmutex_lock(&vd->lock, 0);
 }
 
 /* Unlock volume */
 static inline void ext2Unlock (ext2_vd *vd)
 {
     //LWP_MutexUnlock(vd->lock);
-    sysLwMutexUnlock(&vd->lock);
+    sys_lwmutex_unlock(&vd->lock);
 }
 
 const char *ext2RealPath (const char *path);

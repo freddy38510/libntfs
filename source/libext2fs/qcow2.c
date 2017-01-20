@@ -28,16 +28,10 @@
 
 #include "../config.h"
 #include <fcntl.h>
-#ifdef __CELLOS_LV2__
-//#include "../../defines/cellos_lv2.h"
+
 #include "../grp.h"
 #include "../pwd.h"
-#else
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
-#include <grp.h>
-#endif
+
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>

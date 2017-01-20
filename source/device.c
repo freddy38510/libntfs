@@ -68,10 +68,6 @@
 #include <linux/hdreg.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "types.h"
 #include "mst.h"
 #include "debug.h"
@@ -622,7 +618,7 @@ s64 ntfs_device_size_get(struct ntfs_device *dev, int block_size)
  *
  * The following error codes are defined:
  *	EINVAL		Input parameter error
- *	EOPNOTSUPP	System does not support HDIO_GETGEO ioctl
+ *	ENOTSUP	System does not support HDIO_GETGEO ioctl
  *	ENOTTY		@dev is a file or a device not supporting HDIO_GETGEO
  */
 s64 ntfs_device_partition_start_sector_get(struct ntfs_device *dev)
@@ -641,7 +637,7 @@ s64 ntfs_device_partition_start_sector_get(struct ntfs_device *dev)
 		}
 	}
 #else
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 #endif
 	return -1;
 }
@@ -655,7 +651,7 @@ s64 ntfs_device_partition_start_sector_get(struct ntfs_device *dev)
  *
  * The following error codes are defined:
  *	EINVAL		Input parameter error
- *	EOPNOTSUPP	System does not support HDIO_GETGEO ioctl
+ *	ENOTSUP	System does not support HDIO_GETGEO ioctl
  *	ENOTTY		@dev is a file or a device not supporting HDIO_GETGEO
  */
 int ntfs_device_heads_get(struct ntfs_device *dev)
@@ -675,7 +671,7 @@ int ntfs_device_heads_get(struct ntfs_device *dev)
 		}
 	}
 #else
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 #endif
 	return -1;
 }
@@ -689,7 +685,7 @@ int ntfs_device_heads_get(struct ntfs_device *dev)
  *
  * The following error codes are defined:
  *	EINVAL		Input parameter error
- *	EOPNOTSUPP	System does not support HDIO_GETGEO ioctl
+ *	ENOTSUP	System does not support HDIO_GETGEO ioctl
  *	ENOTTY		@dev is a file or a device not supporting HDIO_GETGEO
  */
 int ntfs_device_sectors_per_track_get(struct ntfs_device *dev)
@@ -709,7 +705,7 @@ int ntfs_device_sectors_per_track_get(struct ntfs_device *dev)
 		}
 	}
 #else
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 #endif
 	return -1;
 }
@@ -723,7 +719,7 @@ int ntfs_device_sectors_per_track_get(struct ntfs_device *dev)
  *
  * The following error codes are defined:
  *	EINVAL		Input parameter error
- *	EOPNOTSUPP	System does not support BLKSSZGET ioctl
+ *	ENOTSUP	System does not support BLKSSZGET ioctl
  *	ENOTTY		@dev is a file or a device not supporting BLKSSZGET
  */
 int ntfs_device_sector_size_get(struct ntfs_device *dev)
@@ -765,7 +761,7 @@ int ntfs_device_sector_size_get(struct ntfs_device *dev)
 		}
 	}
 #else
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 #endif
 	return -1;
 }
@@ -780,7 +776,7 @@ int ntfs_device_sector_size_get(struct ntfs_device *dev)
  *
  * The following error codes are defined:
  *	EINVAL		Input parameter error
- *	EOPNOTSUPP	System does not support BLKBSZSET ioctl
+ *	ENOTSUP	System does not support BLKBSZSET ioctl
  *	ENOTTY		@dev is a file or a device not supporting BLKBSZSET
  */
 int ntfs_device_block_size_set(struct ntfs_device *dev,
@@ -806,7 +802,7 @@ int ntfs_device_block_size_set(struct ntfs_device *dev,
 	/* If not a block device, pretend it was successful. */
 	if (!NDevBlock(dev))
 		return 0;
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 #endif
 	return -1;
 }

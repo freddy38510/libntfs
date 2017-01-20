@@ -48,18 +48,11 @@
 #include <sys/stat.h>
 #endif
 #include <unistd.h>
-#ifdef __CELLOS_LV2__
 #include "defines/cellos_lv2.h"
 #include "grp.h"
 #include "pwd.h"
 uid_t getuid(void);
 gid_t getgid(void);
-#else
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
-#include <grp.h>
-#endif
 
 #include "compat.h"
 #include "param.h"
@@ -2234,7 +2227,7 @@ static int ntfs_get_perm(struct SECURITY_CONTEXT *scx,
 	gid_t gid;
 	int perm;
 
-	if (!scx->mapping[MAPUSERS] || (!scx->uid && !(request & S_IEXEC)))
+	if (!scx->mapping[MAPUSERS] || (!scx->uid && !(request & S_IXUSR)))
 		perm = 07777;
 	else {
 		/* check whether available in cache */
@@ -3323,7 +3316,7 @@ int ntfs_sd_add_everyone(ntfs_inode *ni)
  *
  *	Returns 1 if access is allowed, including user is root or no
  *		  user mapping defined
- *		2 if sticky and accesstype is S_IWRITE + S_IEXEC + S_ISVTX
+ *		2 if sticky and accesstype is S_IWUSR + S_IXUSR + S_ISVTX
  *		0 and sets errno if there is a problem or if access
  *		  is not allowed
  *
@@ -3346,7 +3339,7 @@ int ntfs_allowed_access(struct SECURITY_CONTEXT *scx,
 	 */
 	if (!scx->mapping[MAPUSERS]
 	    || (!scx->uid
-		&& (!(accesstype & S_IEXEC)
+		&& (!(accesstype & S_IXUSR)
 		    || (ni->mrec->flags & MFT_RECORD_IS_DIRECTORY))))
 		allow = 1;
 	else {
@@ -3354,28 +3347,28 @@ int ntfs_allowed_access(struct SECURITY_CONTEXT *scx,
 		if (perm >= 0) {
 			res = EACCES;
 			switch (accesstype) {
-			case S_IEXEC:
+			case S_IXUSR:
 				allow = (perm & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0;
 				break;
-			case S_IWRITE:
+			case S_IWUSR:
 				allow = (perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0;
 				break;
-			case S_IWRITE + S_IEXEC:
+			case S_IWUSR + S_IXUSR:
 				allow = ((perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0)
 				    && ((perm & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0);
 				break;
-			case S_IREAD:
+			case S_IRUSR:
 				allow = (perm & (S_IRUSR | S_IRGRP | S_IROTH)) != 0;
 				break;
-			case S_IREAD + S_IEXEC:
+			case S_IRUSR + S_IXUSR:
 				allow = ((perm & (S_IRUSR | S_IRGRP | S_IROTH)) != 0)
 				    && ((perm & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0);
 				break;
-			case S_IREAD + S_IWRITE:
+			case S_IRUSR + S_IWUSR:
 				allow = ((perm & (S_IRUSR | S_IRGRP | S_IROTH)) != 0)
 				    && ((perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0);
 				break;
-			case S_IWRITE + S_IEXEC + S_ISVTX:
+			case S_IWUSR + S_IXUSR + S_ISVTX:
 				if (perm & S_ISVTX) {
 					if ((ntfs_get_owner_mode(scx,ni,&stbuf) >= 0)
 					    && (stbuf.st_uid == scx->uid))
@@ -3386,7 +3379,7 @@ int ntfs_allowed_access(struct SECURITY_CONTEXT *scx,
 					allow = ((perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0)
 					    && ((perm & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0);
 				break;
-			case S_IREAD + S_IWRITE + S_IEXEC:
+			case S_IRUSR + S_IWUSR + S_IXUSR:
 				allow = ((perm & (S_IRUSR | S_IRGRP | S_IROTH)) != 0)
 				    && ((perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0)
 				    && ((perm & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0);
@@ -3426,12 +3419,12 @@ int ntfs_allowed_create(struct SECURITY_CONTEXT *scx,
 	if (!scx->mapping[MAPUSERS])
 		perm = 0777;
 	else
-		perm = ntfs_get_perm(scx, dir_ni, S_IWRITE + S_IEXEC);
+		perm = ntfs_get_perm(scx, dir_ni, S_IWUSR + S_IXUSR);
 	if (!scx->mapping[MAPUSERS]
 	    || !scx->uid) {
 		allow = 1;
 	} else {
-		perm = ntfs_get_perm(scx, dir_ni, S_IWRITE + S_IEXEC);
+		perm = ntfs_get_perm(scx, dir_ni, S_IWUSR + S_IXUSR);
 		if (perm >= 0) {
 			res = EACCES;
 			allow = ((perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0)
@@ -3494,7 +3487,7 @@ BOOL old_ntfs_allowed_dir_access(struct SECURITY_CONTEXT *scx,
 				 * for an not-owned sticky directory, have to
 				 * check whether file itself is owned
 				 */
-			if ((accesstype == (S_IWRITE + S_IEXEC + S_ISVTX))
+			if ((accesstype == (S_IWUSR + S_IXUSR + S_ISVTX))
 			   && (allow == 2)) {
 				ni = ntfs_pathname_to_inode(scx->vol, NULL,
 					 path);
@@ -4977,7 +4970,7 @@ int ntfs_read_sds(struct SECURITY_API *scapi,
 			got = ntfs_attr_data_read(scapi->security.vol->secure_ni,
 				STREAM_SDS, 4, buf, size, offset);
 		else
-			errno = EOPNOTSUPP;
+			errno = ENOTSUP;
 	} else
 		errno = EINVAL;
 	return (got);
@@ -5013,7 +5006,7 @@ INDEX_ENTRY *ntfs_read_sii(struct SECURITY_API *scapi,
 			if (!ret)
 				errno = ENODATA;
 		} else
-			errno = EOPNOTSUPP;
+			errno = ENOTSUP;
 	} else
 		errno = EINVAL;
 	return (ret);

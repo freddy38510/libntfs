@@ -54,9 +54,7 @@
 #include <locale.h>
 #endif
 
-#ifdef __CELLOS_LV2__
 #include "defines/cellos_lv2.h"
-#endif
 
 #include "ntfs.h"
 #include "types.h"
@@ -640,7 +638,7 @@ static int ntfs_device_gekko_io_ioctl(struct ntfs_device *dev, int request, void
         // Unimplemented ioctrl
         default: {
             ntfs_log_perror("Unimplemented ioctrl %i\n", request);
-            errno = EOPNOTSUPP;
+            errno = ENOTSUP;
             return -1;
         }
 

@@ -44,10 +44,6 @@
 #include <limits.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "param.h"
 #include "compat.h"
 #include "attrib.h"
@@ -170,7 +166,7 @@ s64 ntfs_get_attribute_value(const ntfs_volume *vol,
 	if (a->type != AT_ATTRIBUTE_LIST && a->flags) {
 		ntfs_log_error("Non-zero (%04x) attribute flags. Cannot handle "
 			       "this yet.\n", le16_to_cpu(a->flags));
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		return 0;
 	}
 	if (!a->non_resident) {
@@ -928,7 +924,7 @@ static s64 ntfs_attr_pread_i(ntfs_attr *na, const s64 pos, s64 count, void *b)
 			return ntfs_compressed_attr_pread(na, pos, count, b);
 		else {
 				/* compression mode not supported */
-			errno = EOPNOTSUPP;
+			errno = ENOTSUP;
 			return -1;
 		}
 	}
@@ -1823,7 +1819,7 @@ s64 ntfs_attr_pwrite(ntfs_attr *na, const s64 pos, s64 count, const void *b)
 	    && ((na->type != AT_DATA)
 		|| ((na->data_flags & ATTR_COMPRESSION_MASK)
 			 != ATTR_IS_COMPRESSED))) {
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		goto errno_set;
 	}
 	
@@ -5229,7 +5225,7 @@ int ntfs_attr_force_non_resident(ntfs_attr *na)
  *	EPERM	   - The attribute is not allowed to be resident.
  *	EIO	   - I/O error, damaged inode or bug.
  *	ENOSPC	   - There is no enough space to perform conversion.
- *	EOPNOTSUPP - Requested conversion is not supported yet.
+ *	ENOTSUP - Requested conversion is not supported yet.
  *
  * Warning: We do not set the inode dirty and we do not write out anything!
  *	    We expect the caller to do this as this is a fairly low level
@@ -5274,7 +5270,7 @@ static int ntfs_attr_make_resident(ntfs_attr *na, ntfs_attr_search_ctx *ctx)
 	if (na->data_flags & ATTR_IS_ENCRYPTED) {
 		ntfs_log_trace("Making encrypted streams resident is not "
 				"implemented yet.\n");
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		return -1;
 	}
 
@@ -6371,7 +6367,7 @@ static int ntfs_non_resident_attr_expand(ntfs_attr *na, const s64 newsize,
  * 	STATUS_ERROR - otherwise
  * The following error codes are defined:
  *	EINVAL	   - Invalid arguments were passed to the function.
- *	EOPNOTSUPP - The desired resize is not implemented yet.
+ *	ENOTSUP - The desired resize is not implemented yet.
  * 	EACCES     - Encrypted attribute.
  */
 static int ntfs_attr_truncate_i(ntfs_attr *na, const s64 newsize,
@@ -6418,7 +6414,7 @@ static int ntfs_attr_truncate_i(ntfs_attr *na, const s64 newsize,
 	if (compressed
 	   && NAttrNonResident(na)
 	   && ((na->data_flags & ATTR_COMPRESSION_MASK) != ATTR_IS_COMPRESSED)) {
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		ntfs_log_perror("Failed to truncate compressed attribute");
 		goto out;
 	}

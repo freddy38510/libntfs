@@ -42,10 +42,6 @@
 #include "ext2fs.h"
 #include "jfs_user.h"
 
-#ifdef __CELLOS_LV2__
-#include "../defines/cellos_lv2.h"
-#endif
-
 /*
  * This function automatically sets up the journal superblock and
  * returns it as an allocated block.

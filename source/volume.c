@@ -58,10 +58,6 @@
 #include <sys/mnttab.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "param.h"
 #include "compat.h"
 #include "volume.h"
@@ -668,7 +664,7 @@ static int ntfs_volume_check_logfile(ntfs_volume *vol)
 	}
 	
 	if (!ntfs_check_logfile(na, &rp) || !ntfs_is_logfile_clean(na, rp))
-		err = EOPNOTSUPP;
+		err = ENOTSUP;
 		/*
 		 * If the latest restart page was identified as version
 		 * 2.0, then Windows may have kept a cached copy of
@@ -1369,7 +1365,7 @@ ntfs_volume *ntfs_mount(const char *name __attribute__((unused)),
 	 * defined as there are no device operations available in libntfs in
 	 * this case.
 	 */
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 	return NULL;
 #endif
 }
@@ -1574,7 +1570,7 @@ int ntfs_check_if_mounted(const char *file __attribute__((unused)),
  * Return 0 if NTFS version is supported otherwise -1 with errno set.
  *
  * The following error codes are defined:
- *	EOPNOTSUPP - Unknown NTFS version
+ *	ENOTSUP - Unknown NTFS version
  *	EINVAL	   - Invalid argument
  */
 int ntfs_version_is_supported(ntfs_volume *vol)
@@ -1598,7 +1594,7 @@ int ntfs_version_is_supported(ntfs_volume *vol)
 	if (NTFS_V3_0(major, minor) || NTFS_V3_1(major, minor))
 		return 0;
 
-	errno = EOPNOTSUPP;
+	errno = ENOTSUP;
 	return -1;
 }
 
@@ -1742,7 +1738,7 @@ int ntfs_volume_error(int err)
 			 */
 			ret = NTFS_VOLUME_HIBERNATED;
 			break;
-		case EOPNOTSUPP:
+		case ENOTSUP:
 			ret = NTFS_VOLUME_UNCLEAN_UNMOUNT;
 			break;
 		case EBUSY:

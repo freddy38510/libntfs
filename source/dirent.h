@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-# define	MAXPATHLEN	1024
+#define	MAXPATHLEN	1024
 
 #define DT_INVALID			0xff
 #define DT_UNKNOWN			0

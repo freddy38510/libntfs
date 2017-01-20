@@ -7,13 +7,8 @@
 extern "C" {
 #endif
 
-#ifdef __CELLOS_LV2__
 #include "reent.h"
 #include "dirent.h"
-#else
-#include <reent.h>
-#include <sys/dir.h>
-#endif
 #include "statvfs.h"
 
 enum	{

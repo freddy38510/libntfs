@@ -23,11 +23,7 @@
 #ifndef _EXT2FILE_H
 #define _EXT2FILE_H
 
-#ifdef __CELLOS_LV2__
 #include "../sys_reent.h"
-#else
-#include <sys/reent.h>
-#endif
 #include "ext2_internal.h"
 
 /**

@@ -22,22 +22,10 @@
 #ifndef __SYS_STORAGE_H__
 #define __SYS_STORAGE_H__
 
-#ifndef __CELLOS_LV2__
-	#ifndef __lv2ppu__
-	#error you need the psl1ght/lv2 ppu compatible compiler!
-	#endif
-#endif
-
 #include <stdint.h>
 #include <string.h>
-#ifdef __CELLOS_LV2__
-	#include <sys/syscall.h>
-	#include <sys/ppu_thread.h>
-	#include "defines/cellos_lv2.h"
-	#else
-	#include <ppu-lv2.h>
-	#include <sys/thread.h>
-#endif
+#include <sys/syscall.h>
+#include <sys/ppu_thread.h>
 
 //#include "io_buffer.h"
 
@@ -125,7 +113,7 @@ static inline void sys_storage_init_atapi_cmnd(
 static inline int sys_storage_send_atapi_command(uint32_t fd, struct lv2_atapi_cmnd_block *atapi_cmnd, uint8_t *buffer)
 {
     uint64_t tag;
-    lv2syscall7(616
+    system_call_7(616
                 , fd
                 , LV2_STORAGE_SEND_ATAPI_COMMAND
                 , (uint64_t)(uint32_t) atapi_cmnd
@@ -141,7 +129,7 @@ static inline int sys_storage_send_atapi_command(uint32_t fd, struct lv2_atapi_c
 
 static inline int sys_storage_send_device_cmd(uint32_t fd, uint32_t cmd, void * cmd_block, uint32_t cmd_size, void * data_buffer, uint32_t len_data_buffer)
 {
-    lv2syscall6(604
+    system_call_6(604
                 , fd
                 , cmd
                 , (uint64_t)(uint32_t) cmd_block
@@ -155,7 +143,7 @@ static inline int sys_storage_send_device_cmd(uint32_t fd, uint32_t cmd, void * 
 #if 0
 static inline int sys_storage_async_configure(uint32_t fd, sys_io_buffer_t io_buffer, sys_event_queue_t equeue_id, void * sys_event)
 {
-    lv2syscall4(605
+    system_call_4(605
                 , fd
                 , io_buffer
                 , equeue_id
@@ -168,7 +156,7 @@ static inline int sys_storage_async_configure(uint32_t fd, sys_io_buffer_t io_bu
 static inline int sys_storage_async_send_device_command(uint32_t fd, uint64_t cmd,
     const void *cmdbuf, uint32_t cmdbuf_size, void *databuf, uint32_t databuf_size, uint64_t user_data) 
 {
-    lv2syscall7(619
+    system_call_7(619
                 , fd
                 , cmd
                 , (uint64_t) cmdbuf
@@ -183,28 +171,28 @@ static inline int sys_storage_async_send_device_command(uint32_t fd, uint64_t cm
 
 static inline int sys_storage_get_device_info(uint64_t device, device_info_t *device_info)
 {
-    lv2syscall2(609, device, (uint64_t)(uint32_t) device_info);
+    system_call_2(609, device, (uint64_t)(uint32_t) device_info);
 
     return_to_user_prog(int);
 }
 
 static inline int sys_storage_open(uint64_t id, int *fd)
 {
-    lv2syscall4(600, id, 0, (uint64_t)(uint32_t) fd, 0);
+    system_call_4(600, id, 0, (uint64_t)(uint32_t) fd, 0);
 
     return_to_user_prog(int);
 }
 
 static inline int sys_storage_close(int fd)
 {
-    lv2syscall1(601, fd);
+    system_call_1(601, fd);
 
     return_to_user_prog(int);
 }
 
 static inline int sys_storage_read(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
 {
-    lv2syscall7(602, fd, 0, start_sector, sectors, (uint64_t)(uint32_t) bounce_buf, (uint64_t)(uint32_t) sectors_read, 0);
+    system_call_7(602, fd, 0, start_sector, sectors, (uint64_t)(uint32_t) bounce_buf, (uint64_t)(uint32_t) sectors_read, 0);
 
     return_to_user_prog(int);
     
@@ -212,7 +200,7 @@ static inline int sys_storage_read(int fd, uint32_t start_sector, uint32_t secto
 
 static inline int sys_storage_write(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
 {
-    lv2syscall7(603, fd, 0, start_sector, sectors, (uint64_t)(uint32_t) bounce_buf, (uint64_t)(uint32_t) sectors_read, 0);
+    system_call_7(603, fd, 0, start_sector, sectors, (uint64_t)(uint32_t) bounce_buf, (uint64_t)(uint32_t) sectors_read, 0);
 
     return_to_user_prog(int);
     
@@ -221,7 +209,7 @@ static inline int sys_storage_write(int fd, uint32_t start_sector, uint32_t sect
 /*
 static inline int sys_storage_async_read(int fd, uint32_t start_sector, uint32_t sectors, sys_io_block_t bounce_buf, uint64_t user_data)
 {
-    lv2syscall7(606, fd, 0, start_sector, sectors, bounce_buf, user_data, 0);
+    system_call_7(606, fd, 0, start_sector, sectors, bounce_buf, user_data, 0);
 
     return_to_user_prog(int);
     
@@ -233,7 +221,7 @@ static inline int sys_storage_async_read(int fd, uint32_t start_sector, uint32_t
  */
 static inline int sys_storage_reset_bd(void)
 {
-    lv2syscall2(864, 0x5004, 0x29);
+    system_call_2(864, 0x5004, 0x29);
 
     return_to_user_prog(int);
     
@@ -244,7 +232,7 @@ static inline int sys_storage_reset_bd(void)
  */
 static inline int sys_storage_authenticate_bd(void)
 {
-    lv2syscall2(864, 0x5004, 0x46);
+    system_call_2(864, 0x5004, 0x46);
     return_to_user_prog(int);
 }
 
@@ -256,7 +244,7 @@ static inline int sys_storage_ctrl_bd(int _func)
     uint64_t func[0x18/8];
     func[0]= (uint64_t) _func;
     
-    lv2syscall2(864, 0x5007, (uint64_t)(uint32_t) &func[0]);
+    system_call_2(864, 0x5007, (uint64_t)(uint32_t) &func[0]);
 
     return_to_user_prog(int);
     

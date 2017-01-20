@@ -37,8 +37,10 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifndef _NTFS_TYPES_H
 #define u32 uint32_t
 #define s64 int64_t
+#endif
 
 #ifndef ATTRIBUTE_ALIGN
 # define ATTRIBUTE_ALIGN(v)				__attribute__((aligned(v)))
@@ -47,6 +49,7 @@ extern "C" {
 # define ATTRIBUTE_PACKED				__attribute__((packed))
 #endif
 
+#ifndef _PS3_DEFINES_H
 // *** sys/stat.h *** //
 #define	S_ISVTX 0001000
 #define S_ISGID 0002000
@@ -63,6 +66,7 @@ extern "C" {
 #define	S_ISREG(m)	(((m)&S_IFMT) == S_IFREG)
 #define	S_ISLNK(m)	(((m)&S_IFMT) == S_IFLNK)
 #define	S_ISSOCK(m)	(((m)&S_IFMT) == S_IFSOCK)
+#endif
 
 // disc_io.h
 #define FEATURE_MEDIUM_CANREAD      0x00000001
@@ -236,7 +240,6 @@ int ps3ntfs_dirclose(DIR_ITER *dirState);
 // map file functions to libc open, fopen, ...
 void NTFS_init_system_io(void);
 void NTFS_deinit_system_io(void);
-
 
 #ifndef _SYS_STATVFS_H
 #define _SYS_STATVFS_H

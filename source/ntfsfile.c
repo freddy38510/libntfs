@@ -490,7 +490,7 @@ int ntfs_ftruncate_r (struct _reent *r, int fd, off_t len)
         len > 0 &&
         len < file->data_na->initialized_size) {
         ntfsUnlock(file->vd);
-        r->_errno = EOPNOTSUPP;
+        r->_errno = ENOTSUP;
         return -1;
     }
 

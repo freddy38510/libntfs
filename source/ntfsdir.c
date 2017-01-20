@@ -43,11 +43,7 @@
 #include "ntfsinternal.h"
 #include "ntfsdir.h"
 #include "device.h"
-#ifdef __CELLOS_LV2__
-	#include "dirent.h"
-	#else
-	#include <sys/dir.h>
-#endif
+#include "dirent.h"
 
 #define STATE(x)    ((ntfs_dir_state*)(x)->dirStruct)
 

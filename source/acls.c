@@ -50,16 +50,10 @@
 #include <syslog.h>
 #endif
 #include <unistd.h>
-#ifdef __CELLOS_LV2__
+
 #include "defines/cellos_lv2.h"
 #include "grp.h"
 #include "pwd.h"
-#else
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
-#include <grp.h>
-#endif
 
 #include "types.h"
 #include "layout.h"

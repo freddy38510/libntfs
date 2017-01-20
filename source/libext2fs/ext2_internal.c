@@ -29,9 +29,7 @@
 #include "gekko_io2.h"
 #include "ext2fs.h"
 
-#ifdef __CELLOS_LV2__
 #include "../defines/cellos_lv2.h"
-#endif
 
 // EXT2 device driver devoptab
 static const devoptab_t devops_ext2 =
@@ -189,16 +187,10 @@ int ext2InitVolume (ext2_vd *vd)
     // Initialise the volume lock
    // LWP_MutexInit(&vd->lock, false);
 
-    #ifdef __CELLOS_LV2__
     static sys_lwmutex_attribute_t attr = {
 	SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
     };
-    #else
-    static const sys_lwmutex_attr_t attr = {
-	SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE,""
-    };
-    #endif
-    sysLwMutexCreate(&vd->lock, &attr);
+    sys_lwmutex_create(&vd->lock, &attr);
 
     return 0;
 }
@@ -242,7 +234,7 @@ void ext2DeinitVolume (ext2_vd *vd)
 
     // Deinitialise the volume lock
     //LWP_MutexDestroy(vd->lock);
-    sysLwMutexDestroy(&vd->lock);
+    sys_lwmutex_destroy(&vd->lock);
 }
 
 static ext2_ino_t ext2PathToInode(ext2_vd *vd, const char * path)

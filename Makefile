@@ -9,7 +9,7 @@ PPU_SRCS = $(wildcard source/*.c)
 #PPU_SRCS += $(wildcard source/libext2fs/*.c)
 #DEFINES += -DWITH_EXT_SUPPORT
 #DEFINES += -DPS3_STDIO
-DEFINES += -DBIGENDIAN -D__CELLOS_LV2__ -DPS3_GEKKO -DHAVE_CONFIG_H
+DEFINES += -DBIGENDIAN -DPS3_GEKKO -DHAVE_CONFIG_H
 
 PPU_CFLAGS := -Os -Wall -mcpu=cell -fno-strict-aliasing $(PPU_INCDIRS) $(DEFINES) -std=gnu99
 

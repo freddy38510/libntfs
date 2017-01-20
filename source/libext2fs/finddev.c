@@ -32,10 +32,6 @@
 #include <sys/mkdev.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "../defines/cellos_lv2.h"
-#endif
-
 #include "ext2_fs.h"
 #include "ext2fs.h"
 #include "ext2fsP.h"

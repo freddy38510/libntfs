@@ -590,7 +590,7 @@ int ntfs_xattr_system_getxattr(struct SECURITY_CONTEXT *scx,
 			fix_big_endian(value,sizeof(u64));
 		break;
 	default :
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		res = -errno;
 		break;
 	}
@@ -713,7 +713,7 @@ int ntfs_xattr_system_setxattr(struct SECURITY_CONTEXT *scx,
 			res = ntfs_inode_set_times(ni, value, size, flags);
 		break;
 	default :
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		res = -errno;
 		break;
 	}
@@ -781,7 +781,7 @@ int ntfs_xattr_system_removexattr(struct SECURITY_CONTEXT *scx,
 			res = -errno;
 		break;
 	default :
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		res = -errno;
 		break;
 	}

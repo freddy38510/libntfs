@@ -37,10 +37,6 @@
 #include <errno.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "attrib.h"
 #include "debug.h"
 #include "index.h"
@@ -523,7 +519,7 @@ static int ntfs_ie_lookup(const void *key, const int key_len,
 		 */
 		if (!icx->collate) {
 			ntfs_log_error("Collation function not defined\n");
-			errno = EOPNOTSUPP;
+			errno = ENOTSUP;
 			return STATUS_ERROR;
 		}
 		rc = icx->collate(icx->ni->vol, key, key_len,
@@ -620,7 +616,7 @@ static int ntfs_icx_parent_inc(ntfs_index_context *icx)
 {
 	icx->pindex++;
 	if (icx->pindex >= MAX_PARENT_VCN) {
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		ntfs_log_perror("Index is over %d level deep", MAX_PARENT_VCN);
 		return STATUS_ERROR;
 	}
@@ -709,7 +705,7 @@ int ntfs_index_lookup(const void *key, const int key_len, ntfs_index_context *ic
 			/* get the appropriate collation function */
 	icx->collate = ntfs_get_collate_function(ir->collation_rule);
 	if (!icx->collate) {
-		err = errno = EOPNOTSUPP;
+		err = errno = ENOTSUP;
 		ntfs_log_perror("Unknown collation rule 0x%x", 
 				(unsigned)le32_to_cpu(ir->collation_rule));
 		goto err_out;
@@ -1864,7 +1860,7 @@ int ntfs_index_remove(ntfs_inode *dir_ni, ntfs_inode *ni,
 		if ((((FILE_NAME_ATTR *)icx->data)->file_attributes &
 				FILE_ATTR_REPARSE_POINT)
 		   && !ntfs_possible_symlink(ni)) {
-			errno = EOPNOTSUPP;
+			errno = ENOTSUP;
 			goto err_out;
 		}
 

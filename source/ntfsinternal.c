@@ -41,9 +41,6 @@
 #if defined(PS3_GEKKO)
 #include "ntfs.h"
 //#include "ps3_io.c"
-	#ifdef __CELLOS_LV2__
-	#include "defines/cellos_lv2.h"
-	#endif
 
 const INTERFACE_ID ntfs_disc_interfaces[] = {
     { "usb000", &__io_ntfs_usb000 },
@@ -227,20 +224,15 @@ int ntfsInitVolume (ntfs_vd *vd)
     //PS3_LOCK LWP_MutexInit(&vd->lock, false);
 
     #ifdef NTFS_USE_LWMUTEX
-	    #ifdef __CELLOS_LV2__
 	    static sys_lwmutex_attribute_t attr = {
-	    #else
-	    static const sys_lwmutex_attr_t attr = {
-	    #endif
-		SYS_LWMUTEX_ATTR_PROTOCOL,SYS_LWMUTEX_ATTR_RECURSIVE
+		SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
   	    };
-	    sysLwMutexCreate(&vd->lock, &attr);
+	    sys_lwmutex_create(&vd->lock, &attr);
     #else
-	    //sys_mutex_attribute_t attr;
-	    sys_mutex_attr_t attr;
+	    sys_mutex_attribute_t attr;
 	    memset(&attr, 0, sizeof(attr));
-	    attr.attr_protocol = SYS_LWMUTEX_ATTR_PROTOCOL;
-	    attr.attr_recursive = SYS_LWMUTEX_ATTR_RECURSIVE;
+	    attr.attr_protocol = SYS_SYNC_PRIORITY;
+	    attr.attr_recursive = SYS_SYNC_RECURSIVE;
 	    attr.attr_pshared  = 0x00200;
 	    attr.attr_adaptive = 0x02000;
 	    strcpy(attr.name, "ntfs");
@@ -313,13 +305,10 @@ void ntfsDeinitVolume (ntfs_vd *vd)
     // Deinitialise the volume lock
     //PS3_LOCK LWP_MutexDestroy(vd->lock);
 #ifdef NTFS_USE_LWMUTEX
-    sysLwMutexDestroy(&vd->lock);
+    sys_lwmutex_destroy(&vd->lock);
 #else
-    #ifdef __CELLOS_LV2__
     sys_mutex_destroy(vd->lock);
-    #else
-    LV2_SYSCALL sysMutexDestroy(vd->lock);
-    #endif
+    //LV2_SYSCALL sysMutexDestroy(vd->lock);
 #endif
 
     return;
@@ -365,7 +354,7 @@ ntfs_inode *ntfsParseEntry (ntfs_vd *vd, const char *path, int reparseLevel)
             // Sanity check, give up if we are parsing to deep
             if (reparseLevel > NTFS_MAX_SYMLINK_DEPTH) {
                 ntfsCloseEntry(vd, ni);
-                errno = ELOOP;
+                errno = EMLINK;
                 return NULL;
             }
 

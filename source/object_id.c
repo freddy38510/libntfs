@@ -405,7 +405,7 @@ static int add_object_id(ntfs_inode *ni, int flags)
 						AT_UNNAMED, 0, &dummy, (s64)0);
 				NInoSetDirty(ni);
 			} else
-				errno = EOPNOTSUPP;
+				errno = ENOTSUP;
 		} else
 			errno = ENODATA;
 	} else {
@@ -499,7 +499,7 @@ int ntfs_get_ntfs_object_id(ntfs_inode *ni, char *value, size_t size)
 				}
 			} else {
 			/* unexpected size, better return unsupported */
-				errno = EOPNOTSUPP;
+				errno = ENOTSUP;
 				full_size = 0;
 			}
 			free(objectid_attr);

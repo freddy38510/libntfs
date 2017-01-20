@@ -33,10 +33,6 @@
 #include <errno.h>
 #endif
 
-#ifdef __CELLOS_LV2__
-#include "defines/cellos_lv2.h"
-#endif
-
 #include "attrib.h"
 #include "index.h"
 #include "collate.h"
@@ -267,7 +263,7 @@ COLLATE ntfs_get_collate_function(COLLATION_RULES cr)
 		collate = ntfs_collate_ntofs_ulongs;
 		break;
 	default :
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		collate = (COLLATE)NULL;
 		break;
 	}

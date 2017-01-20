@@ -43,9 +43,7 @@
 #include <sys/sysmacros.h>
 #endif
 
-#ifdef __CELLOS_LV2__
 #include "defines/cellos_lv2.h"
-#endif
 
 #include "param.h"
 #include "types.h"
@@ -1504,7 +1502,7 @@ static ntfs_inode *__ntfs_create(ntfs_inode *dir_ni, le32 securid,
 	}
 	
 	if (dir_ni->flags & FILE_ATTR_REPARSE_POINT) {
-		errno = EOPNOTSUPP;
+		errno = ENOTSUP;
 		return NULL;
 	}
 	
@@ -2162,7 +2160,7 @@ static int ntfs_link_i(ntfs_inode *ni, ntfs_inode *dir_ni, const ntfschar *name,
 	
 	if ((ni->flags & FILE_ATTR_REPARSE_POINT)
 	   && !ntfs_possible_symlink(ni)) {
-		err = EOPNOTSUPP;
+		err = ENOTSUP;
 		goto err_out;
 	}
 	if (NVolHideDotFiles(dir_ni->vol)) {
