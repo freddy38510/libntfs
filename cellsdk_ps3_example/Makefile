@@ -7,7 +7,7 @@ PPU_SRCS = main.c
 PPU_TARGET = libntfs_sample.elf
 
 PPU_INCDIRS = -I../include
-PPU_LIBS	= ../libntfs_ext.a
+PPU_LIBS	= ../libntfs.a
 PPU_LDLIBS 	+= -lfs_stub -lsysmodule_stub
 
 PPU_CFLAGS += -O2 -std=gnu99

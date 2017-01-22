@@ -106,6 +106,7 @@ typedef struct DISC_INTERFACE_STRUCT DISC_INTERFACE;
 
 /* NTFS cache options */
 #define CACHE_DEFAULT_PAGE_COUNT        128  /* The default number of pages in the cache */
+//#define CACHE_DEFAULT_PAGE_COUNT        16  /* should not be more than 16 for PRX to avoid memory issue */
 #define CACHE_DEFAULT_PAGE_SIZE         8    /* The default number of sectors per cache page */
 
 /* NTFS mount flags */
@@ -282,7 +283,6 @@ extern const DISC_INTERFACE __io_ntfs_usb004;
 extern const DISC_INTERFACE __io_ntfs_usb005;
 extern const DISC_INTERFACE __io_ntfs_usb006;
 extern const DISC_INTERFACE __io_ntfs_usb007;
-
 
 #ifdef __cplusplus
 }

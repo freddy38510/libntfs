@@ -3,16 +3,13 @@ CELL_MK_DIR ?= $(CELL_SDK)/samples/mk
 
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
-PPU_LIB_TARGET	= libntfs_ext.a
-PPU_INCDIRS = -Iinclude
-PPU_SRCS = $(wildcard source/*.c)
-#PPU_SRCS += $(wildcard source/libext2fs/*.c)
-#DEFINES += -DWITH_EXT_SUPPORT
-#DEFINES += -DPS3_STDIO
-DEFINES += -DBIGENDIAN -DPS3_GEKKO -DHAVE_CONFIG_H
+MK_TARGET = libntfs.mk libntfs_prx.mk
 
-PPU_CFLAGS := -Os -Wall -mcpu=cell -fno-strict-aliasing $(PPU_INCDIRS) $(DEFINES) -std=gnu99
+standard:         
+	$(MAKE) --no-print-directory -f libntfs.mk
+
+prx:         
+	$(MAKE) --no-print-directory -f libntfs_prx.mk
+
 
 include $(CELL_MK_DIR)/sdk.target.mk
-
-

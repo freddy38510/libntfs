@@ -160,6 +160,9 @@ typedef struct _ntfs_vd {
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
 {
+#ifdef PRX
+return;
+#else
 #ifdef NTFS_LOCK_DEBUG
 
   sys_ppu_thread_t t;
@@ -195,11 +198,15 @@ static inline void ntfsLock (ntfs_vd *vd)
   vd->lockdepth++;
   ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 #endif
+#endif // PRX
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
+#ifdef PRX
+return;
+#else
 #ifdef NTFS_LOCK_DEBUG
   sys_ppu_thread_t t;
   sys_ppu_thread_get_id(&t);
@@ -214,6 +221,7 @@ static inline void ntfsUnlock (ntfs_vd *vd)
 #endif
   if(r)
     ntfs_log_warning("Failed to unlock mutex: %x", r);
+#endif
 }
 
 /* Gekko device related routines */
