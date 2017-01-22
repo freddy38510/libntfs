@@ -116,7 +116,11 @@
 #define HAVE_MBRTOWC 1
 
 /* Define to 1 if you have the `mbsinit' function. */
+#ifdef PRX
 #undef HAVE_MBSINIT
+#else
+#define HAVE_MBSINIT 1
+#endif
 
 /* Define to 1 if you have the `memcpy' function. */
 #define HAVE_MEMCPY 1
