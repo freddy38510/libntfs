@@ -40,9 +40,11 @@
 #include "efs.h"
 #include "unistr.h"
 
-// #define NTFS_USE_LWMUTEX
+#ifdef PRX
+#define NTFS_USE_LWMUTEX
+#endif
 
-#define NTFS_LOCK_DEBUG
+//#define NTFS_LOCK_DEBUG
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
@@ -160,9 +162,6 @@ typedef struct _ntfs_vd {
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
 {
-#ifdef PRX
-return;
-#else
 #ifdef NTFS_LOCK_DEBUG
 
   sys_ppu_thread_t t;
@@ -174,8 +173,8 @@ return;
 #ifdef NTFS_USE_LWMUTEX
   int r = sys_lwmutex_lock(&vd->lock, 0);
   if(r) {
-    ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x",
-	  vd, vd->lock.lock_var, r);
+    //ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x", vd, vd->lock.lock_var, r);
+    ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x\n", vd, (uint64_t)(uint32_t)&vd->lock.lock_var, r); // not sure about this
   }
 #else
 
@@ -198,15 +197,11 @@ return;
   vd->lockdepth++;
   ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 #endif
-#endif // PRX
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
-#ifdef PRX
-return;
-#else
 #ifdef NTFS_LOCK_DEBUG
   sys_ppu_thread_t t;
   sys_ppu_thread_get_id(&t);
@@ -221,7 +216,6 @@ return;
 #endif
   if(r)
     ntfs_log_warning("Failed to unlock mutex: %x", r);
-#endif
 }
 
 /* Gekko device related routines */
