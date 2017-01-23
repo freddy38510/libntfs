@@ -561,7 +561,8 @@ int ntfs_fsync_r (struct _reent *r, int fd)
 
 #define DEV_FD(dev) ((gekko_fd *)dev->d_private)
 
-static size_t ntfs_attr_to_sectors(ntfs_attr *na, const s64 pos, s64 count, uint32_t *sec_out, uint32_t *size_out, int max, uint32_t *s_count, u32 sector_size)
+//static size_t ntfs_attr_to_sectors(ntfs_attr *na, const s64 pos, s64 count, uint32_t *sec_out, uint32_t *size_out, int max, uint32_t *s_count, u32 sector_size)
+static s64 ntfs_attr_to_sectors(ntfs_attr *na, const s64 pos, s64 count, uint32_t *sec_out, uint32_t *size_out, int max, uint32_t *s_count, u32 sector_size)
 {
     s64 br, to_read, ofs, total, total2, max_read, max_init;
     ntfs_volume *vol;
@@ -743,7 +744,8 @@ int ntfs_file_to_sectors (struct _reent *r, const char *path, uint32_t *sec_out,
     ntfs_file_state fileStruct;
     ntfs_file_state* file = &fileStruct;
     uint32_t s_count = 0;
-    size_t len;
+    //size_t len;
+    off64_t len;
 
     // Get the volume descriptor for this path
     file->vd = ntfsGetVolume(path);
@@ -800,7 +802,8 @@ int ntfs_file_to_sectors (struct _reent *r, const char *path, uint32_t *sec_out,
     gekko_fd *fd = DEV_FD(dev);
     
     while (len && s_count < max) {
-        size_t ret = ntfs_attr_to_sectors(file->data_na, file->pos, len, sec_out, size_out, max, &s_count, (u32) fd->sectorSize);
+        //size_t ret = ntfs_attr_to_sectors(file->data_na, file->pos, len, sec_out, size_out, max, &s_count, (u32) fd->sectorSize);
+        off64_t ret = ntfs_attr_to_sectors(file->data_na, file->pos, len, sec_out, size_out, max, &s_count, (u32) fd->sectorSize);
         if (ret <= 0 || ret > len) {
             ntfsUnlock(file->vd);
             r->_errno = errno;
