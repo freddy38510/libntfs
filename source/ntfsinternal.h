@@ -40,7 +40,9 @@
 #include "efs.h"
 #include "unistr.h"
 
+#ifdef DEBUG
 //#define NTFS_LOCK_DEBUG
+#endif
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
