@@ -44,7 +44,7 @@
 #define NTFS_USE_LWMUTEX
 #endif
 
-//#define NTFS_LOCK_DEBUG
+#define NTFS_LOCK_DEBUG
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
@@ -82,140 +82,106 @@ struct _ntfs_dir_state;
  * PRIMARY_PARTITION - Block device partition record
  */
 typedef struct _PARTITION_RECORD {
-    u8 status;                              /* Partition status; see above */
-    u8 chs_start[3];                        /* Cylinder-head-sector address to first block of partition */
-    u8 type;                                /* Partition type; see above */
-    u8 chs_end[3];                          /* Cylinder-head-sector address to last block of partition */
-    u32 lba_start;                          /* Local block address to first sector of partition */
-    u32 block_count;                        /* Number of blocks in partition */
+	u8 status;                              /* Partition status; see above */
+	u8 chs_start[3];                        /* Cylinder-head-sector address to first block of partition */
+	u8 type;                                /* Partition type; see above */
+	u8 chs_end[3];                          /* Cylinder-head-sector address to last block of partition */
+	u32 lba_start;                          /* Local block address to first sector of partition */
+	u32 block_count;                        /* Number of blocks in partition */
 } __attribute__((__packed__)) PARTITION_RECORD;
 
 /**
  * MASTER_BOOT_RECORD - Block device master boot record
  */
 typedef struct _MASTER_BOOT_RECORD {
-    u8 code_area[446];                      /* Code area; normally empty */
-    PARTITION_RECORD partitions[4];         /* 4 primary partitions */
-    u16 signature;                          /* MBR signature; 0xAA55 */
+	u8 code_area[446];                      /* Code area; normally empty */
+	PARTITION_RECORD partitions[4];         /* 4 primary partitions */
+	u16 signature;                          /* MBR signature; 0xAA55 */
 } __attribute__((__packed__)) MASTER_BOOT_RECORD;
 
 /**
  * EXTENDED_PARTITION - Block device extended boot record
  */
 typedef struct _EXTENDED_BOOT_RECORD {
-    u8 code_area[446];                      /* Code area; normally empty */
-    PARTITION_RECORD partition;             /* Primary partition */
-    PARTITION_RECORD next_ebr;              /* Next extended boot record in the chain */
-    u8 reserved[32];                        /* Normally empty */
-    u16 signature;                          /* EBR signature; 0xAA55 */
+	u8 code_area[446];                      /* Code area; normally empty */
+	PARTITION_RECORD partition;             /* Primary partition */
+	PARTITION_RECORD next_ebr;              /* Next extended boot record in the chain */
+	u8 reserved[32];                        /* Normally empty */
+	u16 signature;                          /* EBR signature; 0xAA55 */
 } __attribute__((__packed__)) EXTENDED_BOOT_RECORD;
 
 /**
  * INTERFACE_ID - Disc interface identifier
  */
 typedef struct _INTERFACE_ID {
-    const char *name;                       /* Interface name */
-    const DISC_INTERFACE *interface;        /* Disc interface */
+	const char *name;                       /* Interface name */
+	const DISC_INTERFACE *interface;        /* Disc interface */
 } INTERFACE_ID;
 
 /**
  * ntfs_atime_t - File access time update strategies
  */
 typedef enum {
-    ATIME_ENABLED,                          /* Update access times */
-    ATIME_DISABLED                          /* Don't update access times */
+	ATIME_ENABLED,                          /* Update access times */
+	ATIME_DISABLED                          /* Don't update access times */
 } ntfs_atime_t;
 
 /**
  * ntfs_vd - NTFS volume descriptor
  */
 typedef struct _ntfs_vd {
-    struct ntfs_device *dev;                /* NTFS device handle */
-    ntfs_volume *vol;                       /* NTFS volume handle */
+	struct ntfs_device *dev;                /* NTFS device handle */
+	ntfs_volume *vol;                       /* NTFS volume handle */
 #ifdef NTFS_USE_LWMUTEX
-    sys_lwmutex_t lock;                     /* Volume lock mutex */
+	sys_lwmutex_t lock;                     /* Volume lock mutex */
 #else
-    sys_mutex_t lock;                       /* Volume lock mutex */
+	sys_mutex_t lock;                       /* Volume lock mutex */
 #endif
 #ifdef NTFS_LOCK_DEBUG
   int lockdepth;
 #endif
-    s64 id;                                 /* Filesystem id */
-    u32 flags;                              /* Mount flags */
-    char name[128];                         /* Volume name (cached) */
-    u16 uid;                                /* User id for entry creation */
-    u16 gid;                                /* Group id for entry creation */
-    u16 fmask;                              /* Unix style permission mask for file creation */
-    u16 dmask;                              /* Unix style permission mask for directory creation */
-    ntfs_atime_t atime;                     /* Entry access time update strategy */
-    bool showHiddenFiles;                   /* If true, show hidden files when enumerating directories */
-    bool showSystemFiles;                   /* If true, show system files when enumerating directories */
-    ntfs_inode *cwd_ni;                     /* Current directory */
-    struct _ntfs_dir_state *firstOpenDir;   /* The start of a FILO linked list of currently opened directories */
-    struct _ntfs_file_state *firstOpenFile; /* The start of a FILO linked list of currently opened files */
-    u16 openDirCount;                       /* The total number of directories currently open in this volume */
-    u16 openFileCount;                      /* The total number of files currently open in this volume */
+	s64 id;                                 /* Filesystem id */
+	u32 flags;                              /* Mount flags */
+	char name[128];                         /* Volume name (cached) */
+	u16 uid;                                /* User id for entry creation */
+	u16 gid;                                /* Group id for entry creation */
+	u16 fmask;                              /* Unix style permission mask for file creation */
+	u16 dmask;                              /* Unix style permission mask for directory creation */
+	ntfs_atime_t atime;                     /* Entry access time update strategy */
+	bool showHiddenFiles;                   /* If true, show hidden files when enumerating directories */
+	bool showSystemFiles;                   /* If true, show system files when enumerating directories */
+	ntfs_inode *cwd_ni;                     /* Current directory */
+	struct _ntfs_dir_state *firstOpenDir;   /* The start of a FILO linked list of currently opened directories */
+	struct _ntfs_file_state *firstOpenFile; /* The start of a FILO linked list of currently opened files */
+	u16 openDirCount;                       /* The total number of directories currently open in this volume */
+	u16 openFileCount;                      /* The total number of files currently open in this volume */
 } ntfs_vd;
-
-//extern void mutex_dump_info(sys_mutex_t lock); // to replace by an equivalent function, or create one
 
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
 {
-#ifdef NTFS_LOCK_DEBUG
-
-  sys_ppu_thread_t t;
-  sys_ppu_thread_get_id(&t);
-
-  ntfs_log_trace(0, 2, "NTFS", "0x%x: Locking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
-
-#endif
 #ifdef NTFS_USE_LWMUTEX
-  int r = sys_lwmutex_lock(&vd->lock, 0);
-  if(r) {
-    //ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x", vd, vd->lock.lock_var, r);
-    ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x\n", vd, (uint64_t)(uint32_t)&vd->lock.lock_var, r); // not sure about this
-  }
+	sys_lwmutex_lock(&vd->lock, 0);
 #else
-
-#ifdef NTFS_LOCK_DEBUG
-
-  while(1) {
-    int r = sys_mutex_lock(vd->lock, 1000000);
-    if(r) {
-      //mutex_dump_info(vd->lock); // to replace by an equivalent function, or create one
-      continue;
-    }
-    break;
-  }
+	sys_mutex_lock(vd->lock, 0);
 #endif
 
-  sys_mutex_lock(vd->lock, 0);
-
-#endif
 #ifdef NTFS_LOCK_DEBUG
-  vd->lockdepth++;
-  ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
+	vd->lockdepth++;
+	ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
 #endif
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
-#ifdef NTFS_LOCK_DEBUG
-  sys_ppu_thread_t t;
-  sys_ppu_thread_get_id(&t);
-
-  vd->lockdepth--;
-  ntfs_log_trace(0, 2, "NTFS", "0x%x: Unlocking(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
-#endif
 #ifdef NTFS_USE_LWMUTEX
   int r = sys_lwmutex_unlock(&vd->lock);
 #else
   int r = sys_mutex_unlock(vd->lock);
 #endif
   if(r)
-    ntfs_log_warning("Failed to unlock mutex: %x", r);
+	ntfs_log_warning("Failed to unlock mutex: %x", r);
 }
 
 /* Gekko device related routines */

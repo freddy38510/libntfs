@@ -32,39 +32,30 @@ static inline void* ntfs_alloc (size_t size) {
 }
 
 static inline void* ntfs_align (size_t size) {
-    #ifdef __wii__
     return memalign(32, size);
-    #else
-    return memalign(32, size); 
-    //return malloc(size);
-    #endif
 }
 
 static inline void ntfs_free (void* mem) {
     free(mem);
 }
 
-extern __inline__ void* mem_alloc (size_t size) {
+static inline void* mem_alloc (size_t size) {
     return malloc(size);
 }
 
-extern __inline__ void* mem_calloc (size_t count, size_t size) {
+static inline void* mem_calloc (size_t count, size_t size) {
     return calloc(count, size);
 }
 
-extern __inline__ void* mem_realloc (void *p, size_t size) {
+static inline void* mem_realloc (void *p, size_t size) {
     return realloc(p, size);
 }
 
-extern __inline__ void* mem_align (size_t a, size_t size) {
-    #ifdef __wii__
+static inline void* mem_align (size_t a, size_t size) {
     return memalign(a, size);
-    #else
-    return memalign(a, size);
-    #endif
 }
 
-extern __inline__ void mem_free (void* mem) {
+static inline void mem_free (void* mem) {
     free(mem);
 }
 

@@ -9,7 +9,7 @@
 #ifndef	_SYS__TYPES_H
 #define _SYS__TYPES_H
 
-#include "machine_types.h"
+#include "machine_default_types.h"
 #include "sys_lock.h"
 
 #ifndef __off_t_defined
@@ -59,7 +59,8 @@ typedef long _ssize_t;
 #endif
 #endif
 
-typedef unsigned int wint_t;
+//typedef unsigned int wint_t;
+#include <wchar.h>
 
 #define __need_wint_t
 #include <stddef.h>

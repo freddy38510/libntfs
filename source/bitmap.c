@@ -1,25 +1,25 @@
 /**
- * bitmap.c - Bitmap handling code. Originated from the Linux-NTFS project.
- *
- * Copyright (c) 2002-2006 Anton Altaparmakov
- * Copyright (c) 2004-2005 Richard Russon
- * Copyright (c) 2004-2008 Szabolcs Szakacsits
- *
- * This program/include file is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program/include file is distributed in the hope that it will be
- * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program (in the main directory of the NTFS-3G
- * distribution in the file COPYING); if not, write to the Free Software
- * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+	* bitmap.c - Bitmap handling code. Originated from the Linux-NTFS project.
+	*
+	* Copyright (c) 2002-2006 Anton Altaparmakov
+	* Copyright (c) 2004-2005 Richard Russon
+	* Copyright (c) 2004-2008 Szabolcs Szakacsits
+	*
+	* This program/include file is free software; you can redistribute it and/or
+	* modify it under the terms of the GNU General Public License as published
+	* by the Free Software Foundation; either version 2 of the License, or
+	* (at your option) any later version.
+	*
+	* This program/include file is distributed in the hope that it will be
+	* useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+	* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	* GNU General Public License for more details.
+	*
+	* You should have received a copy of the GNU General Public License
+	* along with this program (in the main directory of the NTFS-3G
+	* distribution in the file COPYING); if not, write to the Free Software
+	* Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -46,13 +46,13 @@
 #include "misc.h"
 
 /**
- * ntfs_bit_set - set a bit in a field of bits
- * @bitmap:	field of bits
- * @bit:	bit to set
- * @new_value:	value to set bit to (0 or 1)
- *
- * Set the bit @bit in the @bitmap to @new_value. Ignore all errors.
- */
+	* ntfs_bit_set - set a bit in a field of bits
+	* @bitmap:	field of bits
+	* @bit:	bit to set
+	* @new_value:	value to set bit to (0 or 1)
+	*
+	* Set the bit @bit in the @bitmap to @new_value. Ignore all errors.
+	*/
 void ntfs_bit_set(u8 *bitmap, const u64 bit, const u8 new_value)
 {
 	if (!bitmap || new_value > 1)
@@ -64,13 +64,13 @@ void ntfs_bit_set(u8 *bitmap, const u64 bit, const u8 new_value)
 }
 
 /**
- * ntfs_bit_get - get value of a bit in a field of bits
- * @bitmap:	field of bits
- * @bit:	bit to get
- *
- * Get and return the value of the bit @bit in @bitmap (0 or 1).
- * Return -1 on error.
- */
+	* ntfs_bit_get - get value of a bit in a field of bits
+	* @bitmap:	field of bits
+	* @bit:	bit to get
+	*
+	* Get and return the value of the bit @bit in @bitmap (0 or 1).
+	* Return -1 on error.
+	*/
 char ntfs_bit_get(const u8 *bitmap, const u64 bit)
 {
 	if (!bitmap)
@@ -79,14 +79,14 @@ char ntfs_bit_get(const u8 *bitmap, const u64 bit)
 }
 
 /**
- * ntfs_bit_get_and_set - get value of a bit in a field of bits and set it
- * @bitmap:	field of bits
- * @bit:	bit to get/set
- * @new_value:	value to set bit to (0 or 1)
- *
- * Return the value of the bit @bit and set it to @new_value (0 or 1).
- * Return -1 on error.
- */
+	* ntfs_bit_get_and_set - get value of a bit in a field of bits and set it
+	* @bitmap:	field of bits
+	* @bit:	bit to get/set
+	* @new_value:	value to set bit to (0 or 1)
+	*
+	* Return the value of the bit @bit and set it to @new_value (0 or 1).
+	* Return -1 on error.
+	*/
 char ntfs_bit_get_and_set(u8 *bitmap, const u64 bit, const u8 new_value)
 {
 	register u8 old_bit, shift;
@@ -101,19 +101,19 @@ char ntfs_bit_get_and_set(u8 *bitmap, const u64 bit, const u8 new_value)
 }
 
 /**
- * ntfs_bitmap_set_bits_in_run - set a run of bits in a bitmap to a value
- * @na:		attribute containing the bitmap
- * @start_bit:	first bit to set
- * @count:	number of bits to set
- * @value:	value to set the bits to (i.e. 0 or 1)
- *
- * Set @count bits starting at bit @start_bit in the bitmap described by the
- * attribute @na to @value, where @value is either 0 or 1.
- *
- * On success return 0 and on error return -1 with errno set to the error code.
- */
+	* ntfs_bitmap_set_bits_in_run - set a run of bits in a bitmap to a value
+	* @na:		attribute containing the bitmap
+	* @start_bit:	first bit to set
+	* @count:	number of bits to set
+	* @value:	value to set the bits to (i.e. 0 or 1)
+	*
+	* Set @count bits starting at bit @start_bit in the bitmap described by the
+	* attribute @na to @value, where @value is either 0 or 1.
+	*
+	* On success return 0 and on error return -1 with errno set to the error code.
+	*/
 static int ntfs_bitmap_set_bits_in_run(ntfs_attr *na, s64 start_bit,
-				       s64 count, int value)
+											s64 count, int value)
 {
 	s64 bufsize, br;
 	u8 *buf, *lastbyte_buf;
@@ -227,9 +227,9 @@ static int ntfs_bitmap_set_bits_in_run(ntfs_attr *na, s64 start_bit,
 		if (firstbyte) {
 			firstbyte = 0;
 			/*
-			 * Re-set the partial first byte so a subsequent write
-			 * of the buffer does not have stale, incorrect bits.
-			 */
+				* Re-set the partial first byte so a subsequent write
+				* of the buffer does not have stale, incorrect bits.
+				*/
 			*buf = value ? 0xff : 0;
 		}
 		start_bit += tmp;
@@ -240,8 +240,8 @@ static int ntfs_bitmap_set_bits_in_run(ntfs_attr *na, s64 start_bit,
 		if (lastbyte && count != 0) {
 			// FIXME: Eeek! BUG!
 			ntfs_log_error("Last buffer but count is not zero "
-				       "(%lld). Leaving inconsistent metadata.\n",
-				       (long long)count);
+											"(%lld). Leaving inconsistent metadata.\n",
+											(long long)count);
 			errno = EIO;
 			goto free_err_out;
 		}
@@ -255,44 +255,44 @@ free_err_out:
 }
 
 /**
- * ntfs_bitmap_set_run - set a run of bits in a bitmap
- * @na:		attribute containing the bitmap
- * @start_bit:	first bit to set
- * @count:	number of bits to set
- *
- * Set @count bits starting at bit @start_bit in the bitmap described by the
- * attribute @na.
- *
- * On success return 0 and on error return -1 with errno set to the error code.
- */
+	* ntfs_bitmap_set_run - set a run of bits in a bitmap
+	* @na:		attribute containing the bitmap
+	* @start_bit:	first bit to set
+	* @count:	number of bits to set
+	*
+	* Set @count bits starting at bit @start_bit in the bitmap described by the
+	* attribute @na.
+	*
+	* On success return 0 and on error return -1 with errno set to the error code.
+	*/
 int ntfs_bitmap_set_run(ntfs_attr *na, s64 start_bit, s64 count)
 {
 	int ret; 
 	
 	ntfs_log_enter("Set from bit %lld, count %lld\n",
-		       (long long)start_bit, (long long)count);
+									(long long)start_bit, (long long)count);
 	ret = ntfs_bitmap_set_bits_in_run(na, start_bit, count, 1);
 	ntfs_log_leave("\n");
 	return ret;
 }
 
 /**
- * ntfs_bitmap_clear_run - clear a run of bits in a bitmap
- * @na:		attribute containing the bitmap
- * @start_bit:	first bit to clear
- * @count:	number of bits to clear
- *
- * Clear @count bits starting at bit @start_bit in the bitmap described by the
- * attribute @na.
- *
- * On success return 0 and on error return -1 with errno set to the error code.
- */
+	* ntfs_bitmap_clear_run - clear a run of bits in a bitmap
+	* @na:		attribute containing the bitmap
+	* @start_bit:	first bit to clear
+	* @count:	number of bits to clear
+	*
+	* Clear @count bits starting at bit @start_bit in the bitmap described by the
+	* attribute @na.
+	*
+	* On success return 0 and on error return -1 with errno set to the error code.
+	*/
 int ntfs_bitmap_clear_run(ntfs_attr *na, s64 start_bit, s64 count)
 {
 	int ret; 
 	
 	ntfs_log_enter("Clear from bit %lld, count %lld\n",
-		       (long long)start_bit, (long long)count);
+									(long long)start_bit, (long long)count);
 	ret = ntfs_bitmap_set_bits_in_run(na, start_bit, count, 0);
 	ntfs_log_leave("\n");
 	return ret;
