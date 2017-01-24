@@ -382,7 +382,7 @@ ssize_t ntfs_read_r(struct _reent *r, int fd, char *ptr, size_t len)
 
 off_t ntfs_seek_r(struct _reent *r, int fd, off_t pos, int dir)
 {
-	ntfs_log_trace("fd %p, pos %llu, dir %i\n", (void *) fd, pos, dir);
+	ntfs_log_trace("fd %p, pos %d, dir %i\n", (void *) fd, pos, dir);
 
 	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
 	off_t position = 0;

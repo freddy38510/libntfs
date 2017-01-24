@@ -94,7 +94,6 @@ static struct ntfs_logging ntfs_log = {
 #endif
 };
 
-
 /**
  * ntfs_log_get_levels - Get a list of the current logging levels
  *
@@ -140,7 +139,6 @@ u32 ntfs_log_clear_levels(u32 levels)
 	ntfs_log.levels &= (~levels);
 	return old;
 }
-
 
 /**
  * ntfs_log_get_flags - Get a list of logging style flags
@@ -188,7 +186,6 @@ u32 ntfs_log_clear_flags(u32 flags)
 	return old;
 }
 
-
 /**
  * ntfs_log_get_stream - Default output streams for logging levels
  * @level:	Log level
@@ -209,7 +206,6 @@ static FILE * ntfs_log_get_stream(u32 level)
 		case NTFS_LOG_LEVEL_VERBOSE:
 			stream = stdout;
 			break;
-
 		case NTFS_LOG_LEVEL_DEBUG:
 		case NTFS_LOG_LEVEL_TRACE:
 		case NTFS_LOG_LEVEL_ENTER:
@@ -222,7 +218,6 @@ static FILE * ntfs_log_get_stream(u32 level)
 			stream = stderr;
 			break;
 	}
-
 	return stream;
 }
 
@@ -273,10 +268,8 @@ static const char * ntfs_log_get_prefix(u32 level)
 			prefix = "";
 			break;
 	}
-
 	return prefix;
 }
-
 
 /**
  * ntfs_log_set_handler - Provide an alternate logging handler
@@ -333,7 +326,6 @@ int ntfs_log_redirect(const char *function, const char *file,
 	return ret;
 }
 
-
 /**
  * ntfs_log_handler_syslog - syslog logging handler
  * @function:	Function in which the log line occurred
@@ -350,7 +342,6 @@ int ntfs_log_redirect(const char *function, const char *file,
  *            0  Message wasn't logged
  *          num  Number of output characters
  */
-
 
 #ifdef HAVE_SYSLOG_H
 
@@ -601,7 +592,6 @@ int ntfs_log_handler_stderr(const char *function, const char *file,
 	return ntfs_log_handler_fprintf(function, file, line, level, data, format, args);
 }
 
-
 /**
  * ntfs_log_parse_option - Act upon command line options
  * @option:	Option flag
@@ -634,4 +624,3 @@ BOOL ntfs_log_parse_option(const char *option)
 	ntfs_log_debug("Unknown logging option '%s'\n", option);
 	return FALSE;
 }
-

@@ -431,7 +431,9 @@ out:
 	return ret;
 }
 
+#ifdef DEBUG
 static const char *es = "  Leaving inconsistent metadata.  Run chkdsk.";
+#endif
 
 /**
  * ntfs_ffz - Find the first unset (zero) bit in a word

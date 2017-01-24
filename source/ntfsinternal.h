@@ -40,11 +40,7 @@
 #include "efs.h"
 #include "unistr.h"
 
-#ifdef PRX
-#define NTFS_USE_LWMUTEX
-#endif
-
-#define NTFS_LOCK_DEBUG
+//#define NTFS_LOCK_DEBUG
 
 //#include <gccore.h>
 //#include <ogc/disc_io.h>

@@ -1,11 +1,19 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you want to use lwmutexes instead of mutexes
+	Force define to 1 for PRX */
+#ifndef PRX
+#undef NTFS_USE_LWMUTEX
+#else
+#define NTFS_USE_LWMUTEX 1
+#endif
+
 /* Define this to 1 if you want to enable support of encrypted files in
    libntfs and utilities. */
 #undef ENABLE_CRYPTO
 
 /* Define to 1 if debug should be enabled */
-#undef ENABLE_DEBUG
+//#undef ENABLE_DEBUG
 
 /* Define to 1 if the nfconv patch should be enabled */
 #undef ENABLE_NFCONV

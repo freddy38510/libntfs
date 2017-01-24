@@ -129,4 +129,3 @@ extern int ntfs_mft_record_free(ntfs_volume *vol, ntfs_inode *ni);
 extern int ntfs_mft_usn_dec(MFT_RECORD *mrec);
 
 #endif /* defined _NTFS_MFT_H */
-

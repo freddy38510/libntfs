@@ -78,6 +78,7 @@
 const char *ntfs_home = 
 "News, support and information:  http://tuxera.com\n";
 
+#ifdef DEBUG
 static const char *invalid_ntfs_msg =
 "The device '%s' doesn't seem to have a valid NTFS.\n"
 "Maybe the wrong device is used? Or the whole disk instead of a\n"
@@ -116,6 +117,7 @@ static const char *access_denied_msg =
 "Please check '%s' and the ntfs-3g binary permissions,\n"
 "and the mounting user ID. More explanation is provided at\n"
 "http://tuxera.com/community/ntfs-3g-faq/#unprivileged\n";
+#endif
 
 /**
  * ntfs_volume_alloc - Create an NTFS volume object and initialise it

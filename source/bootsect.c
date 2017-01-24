@@ -151,12 +151,14 @@ not_ntfs:
 	return ret;
 }
 
+#ifdef DEBUG
 static const char *last_sector_error =
 "HINTS: Either the volume is a RAID/LDM but it wasn't setup yet,\n"
 "   or it was not setup correctly (e.g. by not using mdadm --build ...),\n"
 "   or a wrong device is tried to be mounted,\n"
 "   or the partition table is corrupt (partition is smaller than NTFS),\n"
 "   or the NTFS boot sector is corrupt (NTFS size is not valid).\n";
+#endif
 
 /**
  * ntfs_boot_sector_parse - setup an ntfs volume from an ntfs boot sector

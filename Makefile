@@ -11,5 +11,4 @@ standard:
 prx:         
 	$(MAKE) --no-print-directory -f libntfs_prx.mk
 
-
 include $(CELL_MK_DIR)/sdk.target.mk

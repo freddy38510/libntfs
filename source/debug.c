@@ -74,6 +74,4 @@ void ntfs_debug_runlist_dump(const runlist_element *rl)
 				       rl[i].length ? "" : " (runlist end)");
 	} while (rl[i++].length);
 }
-
 #endif
-

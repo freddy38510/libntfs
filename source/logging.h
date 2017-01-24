@@ -90,6 +90,7 @@ int ntfs_log_redirect(const char *function, const char *file, int line,
 /* Macros to simplify logging.  One for each level defined above.
  * Note, ntfs_log_debug/trace have effect only if DEBUG is defined.
  */
+#ifdef DEBUG
 #define ntfs_log_critical(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_CRITICAL,NULL,FORMAT,##ARGS)
 #define ntfs_log_error(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_ERROR,NULL,FORMAT,##ARGS)
 #define ntfs_log_info(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_INFO,NULL,FORMAT,##ARGS)
@@ -98,6 +99,16 @@ int ntfs_log_redirect(const char *function, const char *file, int line,
 #define ntfs_log_quiet(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_QUIET,NULL,FORMAT,##ARGS)
 #define ntfs_log_verbose(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_VERBOSE,NULL,FORMAT,##ARGS)
 #define ntfs_log_warning(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_WARNING,NULL,FORMAT,##ARGS)
+#else
+#define ntfs_log_critical(FORMAT, ARGS...)
+#define ntfs_log_error(FORMAT, ARGS...)
+#define ntfs_log_info(FORMAT, ARGS...)
+#define ntfs_log_perror(FORMAT, ARGS...)
+#define ntfs_log_progress(FORMAT, ARGS...)
+#define ntfs_log_quiet(FORMAT, ARGS...)
+#define ntfs_log_verbose(FORMAT, ARGS...)
+#define ntfs_log_warning(FORMAT, ARGS...)
+#endif
 
 /* By default debug and trace messages are compiled into the program,
  * but not displayed.
@@ -116,6 +127,5 @@ int ntfs_log_redirect(const char *function, const char *file, int line,
 
 void ntfs_log_early_error(const char *format, ...)
                 __attribute__((format(printf, 1, 2)));
-
 #endif /* _LOGGING_H_ */
 
