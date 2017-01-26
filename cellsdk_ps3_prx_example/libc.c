@@ -6,6 +6,21 @@
 #include <errno.h>
 #include <time.h>
 
+#ifdef DEBUG
+// for libntfs_prx.debug library
+extern void stdc_C291E698(int status) __attribute__ ((noreturn));					// exit()
+inline void exit(int status) {return stdc_C291E698(status);}
+
+extern int stdc_FAEC8C60(FILE *stream, const char *fmt, ...);                         // fprintf()
+inline int fprintf(FILE *stream, const char *fmt, ...) { return stdc_FAEC8C60(stream, fmt);}
+
+extern int stdc_FB2081FD(FILE *stream, const char *fmt, va_list arg);                 // vfprintf()
+inline int vfprintf(FILE *stream, const char *fmt, va_list arg) {return stdc_FB2081FD(stream, fmt, arg);}
+
+extern int stdc_814D8CB0(FILE * stream);                                              // fflush()
+inline int fflush(FILE * stream) {return stdc_814D8CB0(stream);}
+#endif
+
 // external
 extern int stdc_E1E83C65(const char *str1, const char *str2, size_t num);             // strncmp()
 inline int strncmp(const char *str1, const char *str2, size_t num) {return stdc_E1E83C65(str1, str2, num);}

@@ -40,10 +40,6 @@
 #include "efs.h"
 #include "unistr.h"
 
-#ifdef DEBUG
-//#define NTFS_LOCK_DEBUG
-#endif
-
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
 
@@ -135,9 +131,6 @@ typedef struct _ntfs_vd {
 #else
 	sys_mutex_t lock;                       /* Volume lock mutex */
 #endif
-#ifdef NTFS_LOCK_DEBUG
-  int lockdepth;
-#endif
 	s64 id;                                 /* Filesystem id */
 	u32 flags;                              /* Mount flags */
 	char name[128];                         /* Volume name (cached) */
@@ -163,23 +156,16 @@ static inline void ntfsLock (ntfs_vd *vd)
 #else
 	sys_mutex_lock(vd->lock, 0);
 #endif
-
-#ifdef NTFS_LOCK_DEBUG
-	vd->lockdepth++;
-	ntfs_log_trace(0, 2, "NTFS", "0x%x:  Locked(%p,%x): %d", t, vd, vd->lock, vd->lockdepth);
-#endif
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
 #ifdef NTFS_USE_LWMUTEX
-  int r = sys_lwmutex_unlock(&vd->lock);
+	sys_lwmutex_unlock(&vd->lock);
 #else
-  int r = sys_mutex_unlock(vd->lock);
+	sys_mutex_unlock(vd->lock);
 #endif
-  if(r)
-	ntfs_log_warning("Failed to unlock mutex: %x", r);
 }
 
 /* Gekko device related routines */

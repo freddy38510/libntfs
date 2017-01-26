@@ -1,20 +1,35 @@
 CELL_MK_DIR = $(CELL_SDK)/samples/mk
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
+BUILD_TYPE = release
+
 LIBSTUB_DIR		= ./lib
 PRX_DIR			= .
 INSTALL			= cp
 PEXPORTPICKUP		= ppu-lv2-prx-exportpickup
 PRX_LDFLAGS_EXTRA	= -L ./lib -Wl,--strip-unused-data
 
+CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrti.o)
+CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='crtbegin.o)
+CRT_TAIL                += $(shell ppu-lv2-gcc -print-file-name'='crtend.o)
+CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrtn.o)
+
 PPU_SRCS = 		libc.c main.c
 PPU_PRX_TARGET = 	test.prx
 PPU_PRX_LDFLAGS += 	$(PRX_LDFLAGS_EXTRA)
 PPU_PRX_STRIP_FLAGS = 	-s
 
-PPU_PRX_LOADLIBS 	+= 	-lallocator_export_stub -lstdc_export_stub ../libntfs_prx.a
+PPU_PRX_LOADLIBS 	+= 	-lallocator_export_stub -lstdc_export_stub 
 
 PPU_CFLAGS += -Os -ffunction-sections -fdata-sections -fno-builtin-printf -nodefaultlibs -std=gnu99 -Wno-shadow -Wno-unused-parameter
+
+ifeq ($(BUILD_TYPE), debug)
+PPU_PRX_LOADLIBS 	+=	../libntfs_prx.debug.a
+PPU_PRX_TARGET	= test.debug.prx
+PPU_CFLAGS 	+= -DDEBUG
+else
+PPU_PRX_LOADLIBS 	+=	../libntfs_prx.a
+endif
 
 CLEANFILES = $(PRX_DIR)/$(PPU_SPRX_TARGET)
 

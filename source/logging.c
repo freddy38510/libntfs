@@ -88,7 +88,9 @@ static struct ntfs_logging ntfs_log = {
 	NTFS_LOG_LEVEL_PROGRESS,
 	NTFS_LOG_FLAG_ONLYNAME,
 #ifdef DEBUG
-	ntfs_log_handler_outerr
+	//ntfs_log_handler_outerr // undefined reference to `_Stderr' / `_Stdout' 
+
+	ntfs_log_handler_null
 #else
 	ntfs_log_handler_null
 #endif
