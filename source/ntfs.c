@@ -40,15 +40,18 @@
 #include "gekko_io.h"
 #include "cache.h"
 
-// #define WITH_EXT_SUPPORT
+//#define WITH_EXT_SUPPORT
 
 // libext
 #define PARTITION_TYPE_LINUX                0x83 /* EXT2/3/4 */
 
 #include "ext2.h"
 #include "mem_allocate.h"
+
+#ifdef WITH_EXT_SUPPORT
 #include "libext2fs/ext2fs.h"
 #include "libext2fs/ext2_fs.h"
+#endif
 
 // NTFS device driver devoptab
 static const devoptab_t devops_ntfs = {
