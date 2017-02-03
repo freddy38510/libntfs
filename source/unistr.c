@@ -1032,11 +1032,13 @@ int ntfs_mbstoucs(const char *ins, ntfschar **outs)
 			errno = EINVAL;
 			goto err_out;
 		}
+#if 0
 		/* Make sure we are not overflowing the NTFS Unicode set. */
-		if ((unsigned long)wc >= (unsigned long)(1 < (8 * sizeof(ntfschar)))) {
+		if ((unsigned long)wc >= (unsigned long)(1 << (8 * sizeof(ntfschar)))) {
 			errno = EILSEQ;
 			goto err_out;
 		}
+#endif
 		/* Convert the CPU wide character to a LE Unicode character. */
 		ucs[o] = cpu_to_le16(wc);
 	}
