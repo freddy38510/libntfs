@@ -39,6 +39,7 @@ static int sysLv2FsLink(const char *oldpath, const char *newpath)
 }
 #endif
 
+//#define FS_S_IFMT 0170000
 //mode_t g_umask = (S_IWGRP | S_IWOTH); //fix reference to undefined symbol `g_umask'
 
 struct passwd * getpwnam(const char *name) { return 0; }
@@ -603,7 +604,8 @@ int ps3ntfs_open(const char *path, int flags, int mode)
 
 	sys_lwmutex_lock(&ps3ntfs_lock, 0);
 
-	//if(is_ntfs) {
+	//if(is_ntfs) 
+	//{
 
 		if(path[0]=='/') path++;
 
