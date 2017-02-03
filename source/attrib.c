@@ -96,7 +96,7 @@ static void NAttrSetFlag(ntfs_attr *na, FILE_ATTR_FLAGS flag)
 		na->ni->flags |= flag;
 	else
 		ntfs_log_trace("Denied setting flag %d for not unnamed data "
-				   "attribute\n", flag);
+			       "attribute\n", flag);
 }
 
 static void NAttrClearFlag(ntfs_attr *na, FILE_ATTR_FLAGS flag)
@@ -165,7 +165,7 @@ s64 ntfs_get_attribute_value(const ntfs_volume *vol,
 	 */
 	if (a->type != AT_ATTRIBUTE_LIST && a->flags) {
 		ntfs_log_error("Non-zero (%04x) attribute flags. Cannot handle "
-				   "this yet.\n", le16_to_cpu(a->flags));
+			   "this yet.\n", le16_to_cpu(a->flags));
 		errno = ENOTSUP;
 		return 0;
 	}
@@ -405,7 +405,7 @@ ntfs_attr *ntfs_attr_open(ntfs_inode *ni, const ATTR_TYPES type,
 	le16 cs;
 
 	ntfs_log_enter("Entering for inode %lld, attr 0x%x.\n",
-			   (unsigned long long)ni->mft_no, type);
+			(unsigned long long)ni->mft_no, type);
 	
 	if (!ni || !ni->vol || !ni->mrec) {
 		errno = EINVAL;
@@ -686,7 +686,7 @@ int ntfs_attr_map_whole_runlist(ntfs_attr *na)
 	int ret = -1;
 
 	ntfs_log_enter("Entering for inode %llu, attr 0x%x.\n",
-			   (unsigned long long)na->ni->mft_no, na->type);
+			(unsigned long long)na->ni->mft_no, na->type);
 
 		/* avoid multiple full runlist mappings */
 	if (NAttrFullyMapped(na)) {
@@ -859,8 +859,8 @@ runlist_element *ntfs_attr_find_vcn(ntfs_attr *na, const VCN vcn)
 	}
 
 	ntfs_log_trace("Entering for inode 0x%llx, attr 0x%x, vcn %llx\n",
-			   (unsigned long long)na->ni->mft_no, na->type,
-			   (long long)vcn);
+				(unsigned long long)na->ni->mft_no, na->type,
+				(long long)vcn);
 retry:
 	rl = na->rl;
 	if (!rl)
@@ -1089,7 +1089,7 @@ res_err_out:
 retry:
 		ntfs_log_trace("Reading %lld bytes from vcn %lld, lcn %lld, ofs"
 				" %lld.\n", (long long)to_read, (long long)rl->vcn,
-				   (long long )rl->lcn, (long long)ofs);
+					(long long )rl->lcn, (long long)ofs);
 		br = ntfs_pread(vol->dev, (rl->lcn << vol->cluster_size_bits) +
 				ofs, to_read, b);
 		/* If everything ok, update progress counters and continue. */
@@ -1151,8 +1151,8 @@ s64 ntfs_attr_pread(ntfs_attr *na, const s64 pos, s64 count, void *b)
 	}
 	
 	ntfs_log_enter("Entering for inode %lld attr 0x%x pos %lld count "
-			   "%lld\n", (unsigned long long)na->ni->mft_no,
-			   na->type, (long long)pos, (long long)count);
+				"%lld\n", (unsigned long long)na->ni->mft_no,
+				na->type, (long long)pos, (long long)count);
 
 	ret = ntfs_attr_pread_i(na, pos, count, b);
 	
@@ -1170,7 +1170,7 @@ static int ntfs_attr_fill_zero(ntfs_attr *na, s64 pos, s64 count)
 	int ret = -1;
 
 	ntfs_log_trace("pos %lld, count %lld\n", (long long)pos, 
-			   (long long)count);
+				(long long)count);
 	
 	if (!na || pos < 0 || count < 0) {
 		errno = EINVAL;
@@ -1222,7 +1222,7 @@ err_out:
 }
 
 static int ntfs_attr_fill_hole(ntfs_attr *na, s64 count, s64 *ofs, 
-				   runlist_element **rl, VCN *update_from)
+					runlist_element **rl, VCN *update_from)
 {
 	s64 to_write;
 	s64 need;
@@ -1238,8 +1238,8 @@ static int ntfs_attr_fill_hole(ntfs_attr *na, s64 count, s64 *ofs,
 	from_vcn = (*rl)->vcn + (*ofs >> vol->cluster_size_bits);
 	
 	ntfs_log_trace("count: %lld, cur_vcn: %lld, from: %lld, to: %lld, ofs: "
-			   "%lld\n", (long long)count, (long long)cur_vcn, 
-			   (long long)from_vcn, (long long)to_write, (long long)*ofs);
+				"%lld\n", (long long)count, (long long)cur_vcn, 
+				(long long)from_vcn, (long long)to_write, (long long)*ofs);
 	 
 	/* Map the runlist to be able to update mapping pairs later. */
 #if PARTIAL_RUNLIST_UPDATING
@@ -1267,7 +1267,7 @@ static int ntfs_attr_fill_hole(ntfs_attr *na, s64 count, s64 *ofs,
 	*rl = ntfs_attr_find_vcn(na, cur_vcn);
 	if (!*rl) {
 		ntfs_log_error("Failed to find run after mapping runlist. "
-				   "Please report to %s.\n", NTFS_DEV_LIST);
+					"Please report to %s.\n", NTFS_DEV_LIST);
 		errno = EIO;
 		goto err_out;
 	}
