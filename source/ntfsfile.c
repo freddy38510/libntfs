@@ -219,14 +219,16 @@ int ntfs_open_r(struct _reent *r, void *fileStruct, const char *path, int flags,
 	// Unlock
 	ntfsUnlock(file->vd);
 
-	return (int)(s64)(intptr_t) fileStruct;
+	return (int)(intptr_t) fileStruct;
+	//return (int)(s64) fileStruct;
 }
 
 int ntfs_close_r(struct _reent *r, int fd)
 {
 	ntfs_log_trace("fd %p\n", (void *) fd);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 
 	// Sanity check
 	if (!file || !file->vd) {
@@ -259,7 +261,8 @@ ssize_t ntfs_write_r(struct _reent *r, int fd, const char *ptr, size_t len)
 {
 	ntfs_log_trace("fd %p, ptr %p, len %u\n", (void *) fd, ptr, len);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	ssize_t written = 0;
 	off_t old_pos = 0;
 
@@ -325,7 +328,8 @@ ssize_t ntfs_read_r(struct _reent *r, int fd, char *ptr, size_t len)
 {
 	ntfs_log_trace("fd %p, ptr %p, len %u\n", (void *) fd, ptr, len);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	ssize_t read = 0;
 
 	// Sanity check
@@ -382,9 +386,10 @@ ssize_t ntfs_read_r(struct _reent *r, int fd, char *ptr, size_t len)
 
 off_t ntfs_seek_r(struct _reent *r, int fd, off_t pos, int dir)
 {
-	ntfs_log_trace("fd %p, pos %d, dir %i\n", (void *) fd, pos, dir);
+	ntfs_log_trace("fd %p, pos %u, dir %i\n", (void *) fd, pos, dir);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	off_t position = 0;
 
 	// Sanity check
@@ -397,7 +402,7 @@ off_t ntfs_seek_r(struct _reent *r, int fd, off_t pos, int dir)
 	ntfsLock(file->vd);
 
 	// Set the files current position
-	switch (dir) {
+	switch(dir) {
 	case SEEK_SET:
 		position = file->pos = MIN(MAX(pos, 0), file->len);
 		break;
@@ -419,7 +424,8 @@ s64 ntfs_seek64_r(struct _reent *r, int fd, s64 pos, int dir)
 {
 	ntfs_log_trace("fd %p, pos %llu, dir %i\n", (void *) fd, pos, dir);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	s64 position = 0;
 
 	// Sanity check
@@ -432,7 +438,7 @@ s64 ntfs_seek64_r(struct _reent *r, int fd, s64 pos, int dir)
 	ntfsLock(file->vd);
 
 	// Set the files current position
-	switch (dir) {
+	switch(dir) {
 	case SEEK_SET:
 		position = file->pos = MIN(MAX(pos, 0), file->len);
 		break;
@@ -454,7 +460,8 @@ int ntfs_fstat_r(struct _reent *r, int fd, struct stat *st)
 {
 	ntfs_log_trace("fd %p\n", (void *) fd);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	int ret = 0;
 
 	// Sanity check
@@ -479,7 +486,8 @@ int ntfs_ftruncate_r(struct _reent *r, int fd, off_t len)
 {
 	ntfs_log_trace("fd %p, len %llu\n", (void *) fd, (u64) len);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 
 	// Sanity check
 	if (!file || !file->vd || !file->ni || !file->data_na) {
@@ -546,7 +554,8 @@ int ntfs_fsync_r(struct _reent *r, int fd)
 {
 	ntfs_log_trace("fd %p\n", (void *) fd);
 
-	ntfs_file_state* file = STATE(((intptr_t)(s64) fd));
+	ntfs_file_state* file = STATE(((intptr_t) fd));
+	//ntfs_file_state* file = STATE(((s64) fd));
 	int ret = 0;
 
 	// Sanity check
@@ -835,4 +844,3 @@ int ntfs_file_to_sectors(struct _reent *r, const char *path, uint32_t *sec_out, 
 
 	return s_count;
 }
-
