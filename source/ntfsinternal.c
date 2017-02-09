@@ -40,7 +40,7 @@
 
 #if defined(PS3_GEKKO)
 #include "ntfs.h"
-//#include "ps3_io.c"
+#include "ps3_io.c"
 
 const INTERFACE_ID ntfs_disc_interfaces[] = {
 	{ "usb000", &__io_ntfs_usb000 },
