@@ -51,8 +51,6 @@
 #include "defines/cellos_lv2.h"
 #include "grp.h"
 #include "pwd.h"
-uid_t getuid(void);
-gid_t getgid(void);
 
 #include "compat.h"
 #include "param.h"
@@ -66,6 +64,12 @@ gid_t getgid(void);
 #include "acls.h"
 #include "cache.h"
 #include "misc.h"
+
+//uid_t getuid(void);
+//gid_t getgid(void);
+
+uid_t getuid(void) { return 0; }
+gid_t getgid(void) { return -1; }
 
 /*
  *	JPA NTFS constants or structs
