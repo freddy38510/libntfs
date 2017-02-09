@@ -40,11 +40,14 @@
 #include "efs.h"
 #include "unistr.h"
 
+#ifdef DEBUG
+#include <sys/ppu_thread.h>
+#define NTFS_LOCK_DEBUG
+#endif
+
 //#include <gccore.h>
 //#include <ogc/disc_io.h>
-
 #include <sys/synchronization.h>
-#include <sys/ppu_thread.h>
 #include "defines/cellos_lv2.h"
 
 #include "ntfs.h"
@@ -131,6 +134,9 @@ typedef struct _ntfs_vd {
 #else
 	sys_mutex_t lock;                       /* Volume lock mutex */
 #endif
+#ifdef NTFS_LOCK_DEBUG
+	int lockdepth;
+#endif
 	s64 id;                                 /* Filesystem id */
 	u32 flags;                              /* Mount flags */
 	char name[128];                         /* Volume name (cached) */
@@ -151,21 +157,59 @@ typedef struct _ntfs_vd {
 /* Lock volume */
 static inline void ntfsLock (ntfs_vd *vd)
 {
+#ifdef NTFS_LOCK_DEBUG
+  sys_ppu_thread_t t;
+  sys_ppu_thread_get_id(&t);
+
+  ntfs_log_trace("0x%llx: Locking(%p,%p): %d", t, vd, &vd->lock, vd->lockdepth);
+#ifdef NTFS_USE_LWMUTEX
+	int r = sys_lwmutex_lock(&vd->lock, 0);
+	if(r)
+		ntfs_log_warning("unable to lock volume %p mutex:0x%016llx error:%x", vd, vd->lock.lock_var.all_info, r);
+#else
+	while(1) {
+		int r = sys_mutex_lock(vd->lock, 1000000);
+		if(r) {
+			ntfs_log_debug("%x", vd->lock);
+			continue;
+		}
+		break;
+  }
+#endif //NTFS_USE_LWMUTEX
+	vd->lockdepth++;
+	ntfs_log_trace("0x%llx:  Locked(%p,%p): %d", t, vd, &vd->lock, vd->lockdepth);
+#else //!NTFS_LOCK_DEBUG
 #ifdef NTFS_USE_LWMUTEX
 	sys_lwmutex_lock(&vd->lock, 0);
 #else
 	sys_mutex_lock(vd->lock, 0);
 #endif
+#endif //NTFS_LOCK_DEBUG
 }
 
 /* Unlock volume */
 static inline void ntfsUnlock (ntfs_vd *vd)
 {
+#ifdef NTFS_LOCK_DEBUG
+	sys_ppu_thread_t t;
+	sys_ppu_thread_get_id(&t);
+
+	vd->lockdepth--;
+	ntfs_log_trace("0x%llx: Unlocking(%p,%p): %d", t, vd, &vd->lock, vd->lockdepth);
+#ifdef NTFS_USE_LWMUTEX
+	int r = sys_lwmutex_unlock(&vd->lock);
+#else
+	int r = sys_mutex_unlock(vd->lock);
+#endif //NTFS_USE_LWMUTEX
+	if(r)
+		ntfs_log_warning("Failed to unlock mutex: %x", r);
+#else //!NTFS_LOCK_DEBUG
 #ifdef NTFS_USE_LWMUTEX
 	sys_lwmutex_unlock(&vd->lock);
 #else
 	sys_mutex_unlock(vd->lock);
 #endif
+#endif //NTFS_LOCK_DEBUG
 }
 
 /* Gekko device related routines */
