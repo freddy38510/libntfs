@@ -57,8 +57,8 @@ typedef int32_t gid_t;
 typedef int32_t uid_t;
 
 typedef double f64;
-typedef	char *	caddr_t;
-typedef long suseconds_t;
+//typedef	char *	caddr_t; // for PS3_STDIO
+//typedef long suseconds_t; // for sys_time.h (ext support)
 
 #endif /* GEKKO */
 
