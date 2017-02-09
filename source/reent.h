@@ -93,9 +93,10 @@ extern "C" {
 #include "sys_reent.h"
 #include "sys_types.h"
 #include "machine_default_types.h"
-#include <time.h>
 
-typedef clock_t _CLOCK_T_;
+#include <time.h> // for clock_t
+
+typedef	clock_t _CLOCK_T_;
 
 #define __need_size_t
 #define __need_ptrdiff_t

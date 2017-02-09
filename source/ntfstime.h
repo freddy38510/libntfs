@@ -34,9 +34,9 @@
 #include <sys/time.h>
 #endif
 
-#include "types.h"
+#include <pthread_types.h> // for timespec
 
-#ifdef PS3_GEKKO
+#ifndef PS3_GEKKO
 /*
  * assume "struct timespec" is not defined if st_mtime is not defined
  */
