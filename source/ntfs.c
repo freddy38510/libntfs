@@ -45,10 +45,10 @@
 // libext
 #define PARTITION_TYPE_LINUX                0x83 /* EXT2/3/4 */
 
-#include "ext2.h"
 #include "mem_allocate.h"
 
 #ifdef WITH_EXT_SUPPORT
+#include "ext2.h"
 #include "libext2fs/ext2fs.h"
 #include "libext2fs/ext2_fs.h"
 #endif
@@ -89,10 +89,10 @@ void ntfsInit (void)
 	// Initialise ntfs-3g (if not already done so)
 	if (!isInit) {
 		isInit = true;
-
 		// Set the log handler
-		#ifdef NTFS_ENABLE_LOG
-		ntfs_log_set_handler(ntfs_log_handler_stderr);
+		#ifdef DEBUG
+		//ntfs_log_set_handler(ntfs_log_handler_stderr); // undefined reference to "_Stderr"
+		ntfs_log_set_handler(ntfs_log_handler_null);
 		#else
 		ntfs_log_set_handler(ntfs_log_handler_null);
 		#endif
