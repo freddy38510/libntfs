@@ -26,7 +26,7 @@
 #endif
 
 #include <cell/fs/cell_fs_file_api.h>
-#include <sys/timer.h>  /* for sys_timer_usleep() */
+#include <sys/timer.h> // for sys_timer_usleep()
 #include "types.h"
 
 /* For internal devices support
@@ -56,10 +56,38 @@ struct group *getgrgid(gid_t x){ return 0; }
 //gid_t getgid () { return -1; }
 
 const devoptab_t *devoptab_list[33]={
-	NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
-	NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
-	NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
-	NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 
@@ -88,7 +116,6 @@ bool PS3_NTFS_Startup(u64 id, int fd)
 	dev_sectsize[fd] = disc_info.sector_size;
 
 	return true; // ok
-
 }
 
 bool PS3_NTFS_Shutdown(int fd)
@@ -140,7 +167,7 @@ bool PS3_NTFS_ReadSectors(int fd, sec_t sector, sec_t numSectors, void* buffer)
 	}
 
 	if(flag) {
-	   if(r>=0) memcpy(buffer, my_buff, dev_sectsize[fd] * numSectors);
+		if(r>=0) memcpy(buffer, my_buff, dev_sectsize[fd] * numSectors);
 
 		free(my_buff);
 	}
@@ -175,8 +202,7 @@ bool PS3_NTFS_WriteSectors(int fd, sec_t sector, sec_t numSectors,const void* bu
 
 	for(n = 0; n < 8; n++) {
 
-		r = sys_storage_write(dev_fd[fd], (uint32_t) sector, (uint32_t) numSectors,
-		(uint8_t *) my_buff, &sectors_read);
+		r = sys_storage_write(dev_fd[fd], (uint32_t) sector, (uint32_t) numSectors, (uint8_t *) my_buff, &sectors_read);
 
 		if(r == 0x80010002) {PS3_NTFS_Shutdown(fd); break;}
 		if(r == 0) break;
@@ -524,7 +550,6 @@ const DISC_INTERFACE __io_ntfs_usb007 = {
 #include "ntfsfile.h"
 #include "ntfsdir.h"
 
-//static __thread struct _reent reent1; // This product "Error: 'reent1' is TLS variable. PRX doesn't support TLS now!" while compiling a PRX with this library
 static struct _reent reent1;
 
 static int _init = 0;
@@ -542,7 +567,7 @@ static void ps3ntfs_init()
 	static sys_lwmutex_attribute_t attr = {
 	SYS_SYNC_PRIORITY,
 	SYS_SYNC_RECURSIVE,
-	"ntfs" //name for debugging
+	""
 	};
 
 	if (_init) return;
@@ -667,7 +692,6 @@ int ps3ntfs_open(const char *path, int flags, int mode)
 	// if(file->is_ntfs) DrawDialogOK("NTFS"); else DrawDialogOK("EXT");
 	sys_lwmutex_unlock(&ps3ntfs_lock);
 	return ret;
-
 }
 
 int ps3ntfs_close(int fd)
@@ -678,7 +702,7 @@ int ps3ntfs_close(int fd)
 
 	reent1._errno = 0;
 
-	int r = NULL;
+	int r;
 
 #if 0
 	ntfs_file_state *fs = (ntfs_file_state *) (s32)(s64) fd;
@@ -842,7 +866,6 @@ int ps3ntfs_stat(const char *file, struct stat *st)
 		return -1;
 	}
 	return devoptab_list[dev]->stat_r(&reent1, file, st);
-
 }
 
 int ps3ntfs_link(const char *existing, const char  *newLink)
@@ -868,7 +891,6 @@ int ps3ntfs_link(const char *existing, const char  *newLink)
 	}
 
 	return devoptab_list[dev]->link_r(&reent1, existing, newLink);
-
 }
 
 int ps3ntfs_unlink(const char *name)
@@ -1109,7 +1131,7 @@ int ps3ntfs_dirclose(DIR_ITER *dirState)
 	if(!dirState) return -1;
 
 	reent1._errno = 0;
-	int r = NULL;
+	int r;
 #if 0
 	if(dirState->device & 0x1000000) {
 		struct dopendir * dopen = dirState->dirStruct;
@@ -1127,14 +1149,15 @@ int ps3ntfs_dirclose(DIR_ITER *dirState)
 int ps3ntfs_statvfs(const char *path, struct statvfs *buf)
 {
 	reent1._errno = 0;
-/*
-	if(strncmp(path, "ntfs", 4) && strncmp(path, "/ntfs", 5) &&
-		strncmp(path, "ext", 3) && strncmp(path, "/ext", 4)) { // file system
 
+	if(strncmp(path, "ntfs", 4) && strncmp(path, "/ntfs", 5)
+	#ifdef WITH_EXT_SUPPORT
+	 && strncmp(path, "ext", 3) && strncmp(path, "/ext", 4)
+	#endif
+	) { // file system
 		reent1._errno = ENOSYS;
 		return -1;
 	}
-*/
 
 	if(path[0]=='/') path++;
 
