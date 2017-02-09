@@ -119,10 +119,10 @@ int ntfs_log_redirect(const char *function, const char *file, int line,
 #define ntfs_log_enter(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_ENTER,NULL,FORMAT,##ARGS)
 #define ntfs_log_leave(FORMAT, ARGS...) ntfs_log_redirect(__FUNCTION__,__FILE__,__LINE__,NTFS_LOG_LEVEL_LEAVE,NULL,FORMAT,##ARGS)
 #else
-#define ntfs_log_debug(FORMAT, ARGS...)do {} while (0)
-#define ntfs_log_trace(FORMAT, ARGS...)do {} while (0)
-#define ntfs_log_enter(FORMAT, ARGS...)do {} while (0)
-#define ntfs_log_leave(FORMAT, ARGS...)do {} while (0)
+#define ntfs_log_debug(FORMAT, ARGS...)//do {} while (0)
+#define ntfs_log_trace(FORMAT, ARGS...)//do {} while (0)
+#define ntfs_log_enter(FORMAT, ARGS...)//do {} while (0)
+#define ntfs_log_leave(FORMAT, ARGS...)//do {} while (0)
 #endif /* DEBUG */
 
 void ntfs_log_early_error(const char *format, ...)
