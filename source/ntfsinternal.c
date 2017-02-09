@@ -222,8 +222,8 @@ int ntfsInitVolume (ntfs_vd *vd)
 
 	#ifdef NTFS_USE_LWMUTEX
 		static sys_lwmutex_attribute_t attr = {
-		SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE
-  		};
+			SYS_SYNC_PRIORITY,SYS_SYNC_RECURSIVE,""
+		};
 		sys_lwmutex_create(&vd->lock, &attr);
 	#else
 		sys_mutex_attribute_t attr;
@@ -237,7 +237,7 @@ int ntfsInitVolume (ntfs_vd *vd)
 	#endif
 
 	#ifdef NTFS_LOCK_DEBUG
-	   vd->lockdepth = 0;
+		vd->lockdepth = 0;
 	#endif
 	// Reset the volumes name cache
 	vd->name[0] = '\0';
