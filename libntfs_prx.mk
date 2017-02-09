@@ -3,7 +3,7 @@ CELL_MK_DIR ?= $(CELL_SDK)/samples/mk
 
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
-BUILD_TYPE = debug
+BUILD_TYPE = release
 
 BUILD_TAG = libntfs_prx
 PPU_LIB_TARGET	= libntfs_prx.a
