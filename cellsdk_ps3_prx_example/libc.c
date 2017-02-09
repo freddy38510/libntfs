@@ -79,6 +79,9 @@ inline time_t time(time_t *timer) {return stdc_89F6F026(timer);}
 extern size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max);              // mbstowcs()
 inline size_t mbstowcs(wchar_t *dest, const char *src, size_t max) {return stdc_FCAC2E8E(dest, src, max);}
 
+//extern size_t stdc_12A55FB7(wchar_t *restrict pwc, const char *restrict s, size_t n, mbstate_t *restrict ps); // mbrtowc
+//inline size_t mbrtowc(wchar_t *restrict pwc, const char *restrict s, size_t n, mbstate_t *restrict ps) {return stdc_12A55FB7(pwc, s, n, ps);}
+
 extern size_t stdc_12A55FB7(wchar_t *restrict pwc, const char *restrict s, size_t n, mbstate_t *restrict ps); // mbrtowc
 int mbtowc(wchar_t * restrict pwc, const char * restrict s, size_t n)
 {
@@ -94,6 +97,9 @@ int mbtowc(wchar_t * restrict pwc, const char * restrict s, size_t n)
      return (-1);
    return ((int)rval);
 }
+
+//extern size_t stdc_B2702E15(char *pmb, wchar_t wc, mbstate_t *ps); // wcrtomb()
+//inline size_t wcrtomb(char *pmb, wchar_t wc, mbstate_t *ps) {return stdc_B2702E15(pmb, wc, ps);}
 
 extern size_t stdc_B2702E15(char *pmb, wchar_t wc, mbstate_t *ps); // wcrtomb()
 int wctomb(char *s, wchar_t wchar)
