@@ -45,9 +45,6 @@
 
 //#include <sys/types.h>
 #include "types.h"
-#ifdef __CYGWIN__
-#include <cygwin/grp.h>
-#endif
 
 #if !defined(_POSIX_SOURCE) && !defined(_XOPEN_SOURCE)
 #define	_PATH_GROUP		"/etc/group"
