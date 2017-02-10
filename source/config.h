@@ -121,7 +121,11 @@
 #undef HAVE_MALLOC_H
 
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
+#ifdef PRX
+#undef HAVE_MBRTOWC
+#else
 #define HAVE_MBRTOWC 1
+#endif
 
 /* Define to 1 if you have the `mbsinit' function. */
 #ifdef PRX
