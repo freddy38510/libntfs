@@ -1011,7 +1011,7 @@ int ps3ntfs_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_
 
 	ps3ntfs_init();
 	if(is_ntfs) {
-	if(path[0]=='/') path++;
+		if(path[0]=='/') path++;
 	}
 	else {
 		return -1;
@@ -1374,7 +1374,7 @@ static _ssize_t s_ps3ntfs_write(struct _reent *r,int fd,const void *ptr,size_t l
 
 static _off_t s_ps3ntfs_lseek(struct _reent *r,int fd, off_t pos,int dir)
 {
-	int ret;
+	_off_t ret;
 	//int ret;
 
 	if(fd >= FDs_RANGE && fd < FDs_RANGE + MAX_FDs) fd = FDs[fd - FDs_RANGE];
