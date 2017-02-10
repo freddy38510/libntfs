@@ -116,13 +116,13 @@ static inline int sys_storage_send_atapi_command(uint32_t fd, struct lv2_atapi_c
     system_call_7(616
                 , fd
                 , LV2_STORAGE_SEND_ATAPI_COMMAND
-                , (uintptr_t) atapi_cmnd
+                , (uint64_t)(uint32_t)atapi_cmnd
                 //, (uint64_t) atapi_cmnd
                 , sizeof(struct lv2_atapi_cmnd_block)
-                , (uintptr_t) buffer
+                , (uint64_t)(uint32_t)buffer
                 //, (uint64_t) buffer
                 , atapi_cmnd->block_size
-                , (uintptr_t) &tag);
+                , (uint64_t)(uint32_t) &tag);
                 //, (uint64_t) &tag);
 
     return_to_user_prog(int);
@@ -135,10 +135,10 @@ static inline int sys_storage_send_device_cmd(uint32_t fd, uint32_t cmd, void * 
     system_call_6(604
                 , fd
                 , cmd
-                , (uintptr_t) cmd_block
+                , (uint64_t)(uint32_t)cmd_block
                 //, (uint64_t) cmd_block
                 , cmd_size
-                , (uintptr_t) data_buffer
+                , (uint64_t)(uint32_t)data_buffer
                 //, (uint64_t) data_buffer
                 , len_data_buffer);
     
@@ -176,7 +176,7 @@ static inline int sys_storage_async_send_device_command(uint32_t fd, uint64_t cm
 
 static inline int sys_storage_get_device_info(uint64_t device, device_info_t *device_info)
 {
-	system_call_2(609, device, (uintptr_t) device_info);
+	system_call_2(609, device, (uint64_t)(uint32_t)device_info);
 	//system_call_2(609, device, (uint64_t) device_info);
 
 	return_to_user_prog(int);
@@ -184,7 +184,7 @@ static inline int sys_storage_get_device_info(uint64_t device, device_info_t *de
 
 static inline int sys_storage_open(uint64_t id, int *fd)
 {
-	system_call_4(600, id, 0, (uintptr_t) fd, 0);
+	system_call_4(600, id, 0, (uint64_t)(uint32_t)fd, 0);
 	//system_call_4(600, id, 0, (uint64_t) fd, 0);
 
 	return_to_user_prog(int);
@@ -192,14 +192,14 @@ static inline int sys_storage_open(uint64_t id, int *fd)
 
 static inline int sys_storage_close(int fd)
 {
-    system_call_1(601, fd);
+	system_call_1(601, fd);
 
-    return_to_user_prog(int);
+	return_to_user_prog(int);
 }
 
 static inline int sys_storage_read(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
 {
-	system_call_7(602, fd, 0, start_sector, sectors, (uintptr_t) bounce_buf, (uintptr_t) sectors_read, 0);
+	system_call_7(602, fd, 0, start_sector, sectors, (uint64_t)(uint32_t)bounce_buf, (uint64_t)(uint32_t)sectors_read, 0);
 	//system_call_7(602, fd, 0, start_sector, sectors, (uint64_t) bounce_buf, (uint64_t) sectors_read, 0);
 
 	return_to_user_prog(int);
@@ -207,7 +207,7 @@ static inline int sys_storage_read(int fd, uint32_t start_sector, uint32_t secto
 
 static inline int sys_storage_write(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
 {
-	system_call_7(603, fd, 0, start_sector, sectors, (uintptr_t) bounce_buf, (uintptr_t) sectors_read, 0);
+	system_call_7(603, fd, 0, start_sector, sectors, (uint64_t)(uint32_t)bounce_buf, (uint64_t)(uint32_t)sectors_read, 0);
 	//system_call_7(603, fd, 0, start_sector, sectors, (uint64_t) bounce_buf, (uint64_t) sectors_read, 0);
 
 	return_to_user_prog(int);
@@ -251,7 +251,7 @@ static inline int sys_storage_ctrl_bd(int _func)
 	uint64_t func[0x18/8];
 	func[0]= (uint64_t) _func;
 
-	system_call_2(864, 0x5007, (uintptr_t) &func[0]);
+	system_call_2(864, 0x5007, (uint64_t)(uint32_t)&func[0]);
 	//system_call_2(864, 0x5007, (uint64_t) &func[0]);
 
 	return_to_user_prog(int);
