@@ -44,7 +44,7 @@ enum {
  */
 
 	/* default option for compression */
-#define DEFAULT_COMPRESSION 0
+#define DEFAULT_COMPRESSION 1
 	/* (log2 of) number of clusters in a compression block for new files */
 #define STANDARD_COMPRESSION_UNIT 4
 	/* maximum cluster size for allowing compression for new files */
@@ -74,7 +74,15 @@ enum {
  */
 
 	/* only update the final extent of a runlist when appending data */
-#define PARTIAL_RUNLIST_UPDATING 0
+#define PARTIAL_RUNLIST_UPDATING 1
+
+/*
+ *		Parameters for upper-case table
+ */
+
+	/* Create upper-case tables as defined by Windows 6.1 (Win7) */
+#define UPCASE_MAJOR 6
+#define UPCASE_MINOR 1
 
 /*
  *		Parameters for user and xattr mappings
@@ -102,12 +110,14 @@ enum {
  *	Possible values for high level :
  *		1 : no cache, kernel control (recommended)
  *		4 : no cache, file system control
+ *		6 : kernel/fuse cache, file system control (OpenIndiana only)
  *		7 : no cache, kernel control for ACLs
  *
  *	Possible values for low level :
  *		2 : no cache, kernel control
  *		3 : use kernel/fuse cache, kernel control (external fuse >= 2.8)
- *		5 : no cache, file system control (recommended)
+ *		5 : no cache, file system control (recommended on Linux)
+ *		6 : kernel/fuse cache, file system control (OpenIndiana only)
  *		8 : no cache, kernel control for ACLs
  *
  *	Use of options 7 and 8 requires a patch to fuse
@@ -116,14 +126,19 @@ enum {
  */
 
 #if defined(__sun) && defined(__SVR4)
-#define HPERMSCONFIG 4 /* access control by kernel is broken on OpenIndiana */
+/*
+ *	Access control by kernel is not implemented on OpenIndiana,
+ *	however care is taken of cacheing hard-linked files.
+ */
+#define HPERMSCONFIG 6
+#define LPERMSCONFIG 6
 #else
 #define HPERMSCONFIG 1
-#endif
 #if defined(FUSE_INTERNAL) || !defined(FUSE_VERSION) || (FUSE_VERSION < 28)
 #define LPERMSCONFIG 5
 #else
 #define LPERMSCONFIG 3
 #endif
+#endif /* defined(__sun) && defined(__SVR4) */
 
 #endif /* defined _NTFS_PARAM_H */

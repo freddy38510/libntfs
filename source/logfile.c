@@ -90,10 +90,10 @@ static BOOL ntfs_check_restart_page_header(RESTART_PAGE_HEADER *rp, s64 pos)
 	 * Windows 8, and we will refuse to mount.
 	 * Nevertheless, do all the relevant checks before rejecting.
 	 */
-	if (((rp->major_ver != const_cpu_to_le16(1))
-			 || (rp->minor_ver != const_cpu_to_le16(1)))
-	   && ((rp->major_ver != const_cpu_to_le16(2))
-			 || (rp->minor_ver != const_cpu_to_le16(0)))) {
+	if (((rp->major_ver != const_cpu_to_sle16(1))
+			 || (rp->minor_ver != const_cpu_to_sle16(1)))
+	   && ((rp->major_ver != const_cpu_to_sle16(2))
+			 || (rp->minor_ver != const_cpu_to_sle16(0)))) {
 		ntfs_log_error("$LogFile version %i.%i is not "
 				"supported.\n   (This driver supports version "
 				"1.1 and 2.0 only.)\n",
@@ -736,7 +736,6 @@ int ntfs_empty_logfile(ntfs_attr *na)
 			return -1;
 		}
 		pos += count;
-		if(pos>=64*1024) break; //only clear first 64kb
 	}
 
 	NVolSetLogFileEmpty(na->ni->vol);

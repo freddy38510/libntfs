@@ -21,7 +21,8 @@
 #include "param.h"
 #include "realpath.h"
 
-#define PATH_MAX 4096
+//#define PATH_MAX 4096
+#define PATH_MAX (512UL)
 
 /* If there is no realpath() on the system, provide a dummy one. */
 #ifndef HAVE_REALPATH

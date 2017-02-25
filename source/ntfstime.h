@@ -34,6 +34,7 @@
 #include <sys/time.h>
 #endif
 
+#include "types.h"
 #include <pthread_types.h> // for timespec
 
 #ifndef PS3_GEKKO
@@ -104,7 +105,7 @@ static __inline__ ntfs_time timespec2ntfs(struct timespec spec)
 
 	units = (s64)spec.tv_sec * 10000000
 				+ NTFS_TIME_OFFSET + spec.tv_nsec/100;
-	return (cpu_to_le64(units));
+	return (cpu_to_sle64(units));
 }
 
 /*

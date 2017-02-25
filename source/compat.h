@@ -46,7 +46,7 @@ extern int ffs(int i);
 #endif /* HAVE_FFS */
 
 #ifndef HAVE_DAEMON
-extern int daemon(int nochdir, int noclose);
+//extern int daemon(int nochdir, int noclose);
 #endif /* HAVE_DAEMON */
 
 #ifndef HAVE_STRSEP
@@ -83,6 +83,7 @@ extern char *strsep(char **stringp, const char *delim);
 #define minor(dev)      ((unsigned int) ((dev) & MINORMASK))
 #define mkdev(ma,mi)    (((ma) << MINORBITS) | (mi)) 
 #define random          rand
+#define srandom         srand
 
 #endif /* defined GEKKO */
 

@@ -479,7 +479,7 @@ ntfs_volume *ntfs_volume_startup(struct ntfs_device *dev,
 
 	if (!dev || !dev->d_ops || !dev->d_name) {
 		errno = EINVAL;
-		ntfs_log_perror("%s: dev = %p", __FUNCTION__, dev); 
+		ntfs_log_perror("%s: dev = %p", __FUNCTION__, dev);
 		return NULL;
 	}
 
@@ -527,7 +527,7 @@ ntfs_volume *ntfs_volume_startup(struct ntfs_device *dev,
 				NVolSetReadOnly(vol);
 			}
 		} else {
-			ntfs_log_perror("Error opening '%s'", dev->d_name);     
+			ntfs_log_perror("Error opening '%s'", dev->d_name);
 			goto error_exit;
 		}
 	}
@@ -545,7 +545,6 @@ ntfs_volume *ntfs_volume_startup(struct ntfs_device *dev,
 			ntfs_log_perror("Error reading bootsector");
 		goto error_exit;
 	}
-
 	if (!ntfs_boot_sector_is_ntfs(bs)) {
 		errno = EINVAL;
 		goto error_exit;
@@ -555,7 +554,6 @@ ntfs_volume *ntfs_volume_startup(struct ntfs_device *dev,
 	
 	free(bs);
 	bs = NULL;
-
 	/* Now set the device block size to the sector size. */
 	if (ntfs_device_block_size_set(vol->dev, vol->sector_size))
 		ntfs_log_debug("Failed to set the device block size to the "
@@ -627,7 +625,6 @@ ntfs_volume *ntfs_volume_startup(struct ntfs_device *dev,
 		ntfs_log_perror("Failed to load $MFTMirr");
 		goto error_exit;
 	}
- 
 	return vol;
 error_exit:
 	eo = errno;
@@ -915,6 +912,7 @@ ntfs_volume *ntfs_device_mount(struct ntfs_device *dev, ntfs_mount_flags flags)
 	ATTR_RECORD *a;
 	VOLUME_INFORMATION *vinf;
 	ntfschar *vname;
+	u32 record_size;
 	int i, j, eo;
 	unsigned int k;
 	u32 u;
@@ -968,13 +966,13 @@ ntfs_volume *ntfs_device_mount(struct ntfs_device *dev, ntfs_mount_flags flags)
 
 		mrec = (MFT_RECORD*)(m + i * vol->mft_record_size);
 		if (mrec->flags & MFT_RECORD_IN_USE) {
-			if (ntfs_is_baad_recordp(mrec)) {
+			if (ntfs_is_baad_record(mrec->magic)) {
 				ntfs_log_error("$MFT error: Incomplete multi "
 					       "sector transfer detected in "
 					       "'%s'.\n", s);
 				goto io_error_exit;
 			}
-			if (!ntfs_is_mft_recordp(mrec)) {
+			if (!ntfs_is_mft_record(mrec->magic)) {
 				ntfs_log_error("$MFT error: Invalid mft "
 						"record for '%s'.\n", s);
 				goto io_error_exit;
@@ -982,19 +980,22 @@ ntfs_volume *ntfs_device_mount(struct ntfs_device *dev, ntfs_mount_flags flags)
 		}
 		mrec2 = (MFT_RECORD*)(m2 + i * vol->mft_record_size);
 		if (mrec2->flags & MFT_RECORD_IN_USE) {
-			if (ntfs_is_baad_recordp(mrec2)) {
+			if (ntfs_is_baad_record(mrec2->magic)) {
 				ntfs_log_error("$MFTMirr error: Incomplete "
 						"multi sector transfer "
 						"detected in '%s'.\n", s);
 				goto io_error_exit;
 			}
-			if (!ntfs_is_mft_recordp(mrec2)) {
+			if (!ntfs_is_mft_record(mrec2->magic)) {
 				ntfs_log_error("$MFTMirr error: Invalid mft "
 						"record for '%s'.\n", s);
 				goto io_error_exit;
 			}
 		}
-		if (memcmp(mrec, mrec2, ntfs_mft_record_get_data_size(mrec))) {
+		record_size = ntfs_mft_record_get_data_size(mrec);
+		if ((record_size <= sizeof(MFT_RECORD))
+		    || (record_size > vol->mft_record_size)
+		    || memcmp(mrec, mrec2, record_size)) {
 			ntfs_log_error("$MFTMirr does not match $MFT (record "
 				       "%d).\n", i);
 			goto io_error_exit;
@@ -1438,7 +1439,8 @@ static int ntfs_mntent_check(const char *file, unsigned long *mnt_flags)
 		err = errno;
 		goto exit;
 	}
-	if (!(f = setmntent(MOUNTED, "r"))) {
+	f = setmntent("/proc/mounts", "r");
+	if (!f && !(f = setmntent(MOUNTED, "r"))) {
 		err = errno;
 		goto exit;
 	}

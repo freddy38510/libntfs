@@ -228,10 +228,9 @@ static inline int sys_storage_async_read(int fd, uint32_t start_sector, uint32_t
  */
 static inline int sys_storage_reset_bd(void)
 {
-    system_call_2(864, 0x5004, 0x29);
+	system_call_2(864, 0x5004, 0x29);
 
-    return_to_user_prog(int);
-    
+	return_to_user_prog(int);
 }
 
 /**
@@ -239,8 +238,8 @@ static inline int sys_storage_reset_bd(void)
  */
 static inline int sys_storage_authenticate_bd(void)
 {
-    system_call_2(864, 0x5004, 0x46);
-    return_to_user_prog(int);
+	system_call_2(864, 0x5004, 0x46);
+	return_to_user_prog(int);
 }
 
 /**

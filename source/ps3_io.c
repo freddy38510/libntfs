@@ -784,7 +784,7 @@ off_t  ps3ntfs_seek(int fd, off_t pos, int dir)
 
 }
 
-s64 ps3ntfs_seek64(int fd, int64_t pos, int dir)
+s64 ps3ntfs_seek64(int fd, s64 pos, int dir)
 {
 	if(fd < 0) return -1;
 
@@ -1151,9 +1151,9 @@ int ps3ntfs_statvfs(const char *path, struct statvfs *buf)
 	reent1._errno = 0;
 
 	if(strncmp(path, "ntfs", 4) && strncmp(path, "/ntfs", 5)
-	#ifdef WITH_EXT_SUPPORT
+#ifdef WITH_EXT_SUPPORT
 	 && strncmp(path, "ext", 3) && strncmp(path, "/ext", 4)
-	#endif
+#endif
 	) { // file system
 		reent1._errno = ENOSYS;
 		return -1;

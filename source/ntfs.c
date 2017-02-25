@@ -91,8 +91,8 @@ void ntfsInit (void)
 		isInit = true;
 		// Set the log handler
 		#ifdef DEBUG
-		//ntfs_log_set_handler(ntfs_log_handler_stderr); // undefined reference to "_Stderr"
-		ntfs_log_set_handler(ntfs_log_handler_null);
+		ntfs_log_set_handler(ntfs_log_handler_stderr); // undefined reference to "_Stderr"
+		//ntfs_log_set_handler(ntfs_log_handler_null);
 		#else
 		ntfs_log_set_handler(ntfs_log_handler_null);
 		#endif

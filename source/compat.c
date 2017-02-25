@@ -26,10 +26,10 @@
 
 #include "compat.h"
 
-int chdir (__const char *__path);
-pid_t fork (void);
-int dup2 (int __fd, int __fd2);
-pid_t setsid (void);
+//int chdir (__const char *__path);
+//pid_t fork (void);
+//int dup2 (int __fd, int __fd2);
+//pid_t setsid (void);
 
 #ifndef HAVE_FFS
 /**
@@ -70,6 +70,7 @@ int ffs(int x)
 }
 #endif /* HAVE_FFS */
 
+#if 0
 #ifndef HAVE_DAEMON
 /* ************************************************************
  *  From: src.opensolaris.org
@@ -156,6 +157,7 @@ int daemon(int nochdir, int noclose) {
  *  End: src/lib/libresolv2/common/bsd/daemon.c
  *************************************************************/
 #endif /* HAVE_DAEMON */
+#endif
 
 #ifndef HAVE_STRSEP
 /* ************************************************************

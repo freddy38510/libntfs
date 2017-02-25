@@ -1,8 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
-
 /* Define to 1 if you want to use lwmutexes instead of mutexes
 	Force define to 1 for PRX */
 #ifndef PRX
@@ -248,7 +245,7 @@
 #undef HAVE_ST_BLOCKS
 
 /* Define to 1 if you have the `sysconf' function. */
-#define HAVE_SYSCONF 1
+#undef HAVE_SYSCONF
 
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H
@@ -342,22 +339,22 @@
 #define PACKAGE_NAME "ntfs-3g"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "ntfs-3g 2013.1.13"
+#define PACKAGE_STRING "ntfs-3g 2016.2.22"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ntfs-3g"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2013.1.13"
+#define PACKAGE_VERSION "2016.2.22"
 
 /* POSIX ACL support */
-#undef POSIXACLS
+/* #undef POSIXACLS */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2013.1.13"
+#define VERSION "2016.2.22"
 
 /* Define to 1 if this is a Windows OS */
 #undef WINDOWS
@@ -385,10 +382,10 @@
 #define _LARGE_FILES 1
 
 /* Required define if using POSIX threads */
-#undef _REENTRANT
+#define _REENTRANT 1
 
 /* Define to empty if `const' does not conform to ANSI C. */
-#undef const
+/* #undef const */
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
@@ -397,12 +394,10 @@
 #endif
 
 /* Define to `long int' if <sys/types.h> does not define. */
-#undef off_t
+/* #undef off_t */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
-#undef size_t
+/* #undef size_t */
 
 /* Define to 1 if you have the <math.h> header file. */
 #define HAVE_MATH_H 1
-
-#endif /* _CONFIG_H_ */
