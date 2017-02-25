@@ -91,7 +91,7 @@ extern "C" {
 #define _REENT_H_
 
 #include "sys_reent.h"
-#include "sys_types.h"
+//#include "sys_types.h"
 #include "machine_default_types.h"
 
 #include <time.h> // for clock_t

@@ -25,6 +25,10 @@
 #define EADDRNOTAVAIL EAGAIN
 #define EADDRINUSE EBUSY
 
+// *** sys/process.h *** //
+
+//#define getpid sys_process_getpid
+
 // ** miscellaneous *** //
 
 //#define MAX(a,b) ((a) > (b) ? (a) : (b))
