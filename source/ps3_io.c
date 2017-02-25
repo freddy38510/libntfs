@@ -46,10 +46,10 @@ static int sysLv2FsLink(const char *oldpath, const char *newpath)
 #endif
 */
 
-struct passwd * getpwnam(const char *name){ return 0; }
-struct passwd * getpwuid(uid_t uid){ return 0; }
-struct group *getgrnam(const char * x){ return 0; }
-struct group *getgrgid(gid_t x){ return 0; }
+extern struct passwd * getpwnam(const char *name){ return 0; }
+extern struct passwd * getpwuid(uid_t uid){ return 0; }
+extern struct group *getgrnam(const char * x){ return 0; }
+extern struct group *getgrgid(gid_t x){ return 0; }
 
 // moved to security.c
 //uid_t getuid(void) { return 0; }
