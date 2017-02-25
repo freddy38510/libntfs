@@ -23,6 +23,7 @@ PPU_SRCS += \
 	source/cache.c \
 	source/cache2.c \
 	source/collate.c \
+	source/compat.c \
 	source/compress.c \
 	source/debug.c \
 	source/device.c \
