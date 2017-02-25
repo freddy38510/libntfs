@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
+
 /* Define to 1 if you want to use lwmutexes instead of mutexes
 	Force define to 1 for PRX */
 #ifndef PRX
@@ -401,3 +404,5 @@
 
 /* Define to 1 if you have the <math.h> header file. */
 #define HAVE_MATH_H 1
+
+#endif /* _CONFIG_H_ */
