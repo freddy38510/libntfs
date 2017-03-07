@@ -1,10 +1,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if you want to use lwmutexes instead of mutexes
-	Force define to 1 for PRX */
-#ifndef PRX
-#undef NTFS_USE_LWMUTEX
-#else
+/* Define to 1 if you want to use lwmutexes instead of mutexes */
+#ifdef PRX
 #define NTFS_USE_LWMUTEX 1
 #endif
 
@@ -121,16 +118,10 @@
 #undef HAVE_MALLOC_H
 
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
-#ifdef PRX
-#undef HAVE_MBRTOWC
-#else
-#define HAVE_MBRTOWC 1
-#endif
+//#define HAVE_MBRTOWC 1 // macro not used
 
 /* Define to 1 if you have the `mbsinit' function. */
-#ifdef PRX
-#undef HAVE_MBSINIT
-#else
+#ifndef PRX
 #define HAVE_MBSINIT 1
 #endif
 
@@ -245,7 +236,7 @@
 #undef HAVE_ST_BLOCKS
 
 /* Define to 1 if you have the `sysconf' function. */
-#undef HAVE_SYSCONF
+//#undef HAVE_SYSCONF
 
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H
