@@ -15,6 +15,11 @@
 #include <cell/sysmodule.h>
 #include <cell/cell_fs.h>
 
+	//#include <pthread_types.h> // for timespec
+	#include <time.h>
+	#include "../source/endians.h"
+	#include <sys/sys_time.h> // for sys_time_get_current_time
+
 #include "ntfs.h"
 
 SYS_PROCESS_PARAM(1001, 0x10000)
@@ -122,7 +127,7 @@ int main(void)
 	
 	log_printf("\n*** ps3ntfs_mkdir ***\n");
 	
-	sprintf(temp, "%s:/viper", mounts[0].name);
+	sprintf(temp, "%s:/viper6", mounts[0].name);
 	if(ps3ntfs_mkdir(temp, 0777) == 0)
 		log_printf("- ps3ntfs_mkdir = true\n");
 	else 
@@ -156,7 +161,14 @@ int main(void)
 	ret = ps3ntfs_stat(temp, &st);
 	log_printf("- ps3ntfs_stat = %d\n", ret);
 	log_printf("- SIZE = %d\n", st.st_size);
-	
+	log_printf("- last_access_time = %d\n", st.st_atime);
+	log_printf("- last_mft_change_time = %d\n", st.st_ctime);
+	log_printf("- last_data_change_time = %d\n", st.st_mtime);
+	log_printf("- st_dev (id) = %d\n", st.st_dev);
+	log_printf("- st uid = %d\n", st.st_uid);
+	log_printf("- st gid = %d\n", st.st_gid);
+	log_printf("- st ino = %d\n", st.st_ino);
+
 	log_printf("\n*** ps3ntfs_open ***\n");
 	for(k=0; k<5000; k++) { // force
 		fd = ps3ntfs_open(temp, O_RDONLY, 0);
@@ -172,6 +184,13 @@ int main(void)
 		ret = ps3ntfs_fstat(fd, &st);
 		log_printf("- ps3ntfs_fstat = %d\n", ret);
 		log_printf("- SIZE = %d\n", st.st_size);
+		log_printf("- last_access_time = %d\n", st.st_atime);
+		log_printf("- last_mft_change_time = %d\n", st.st_ctime);
+		log_printf("- last_data_change_time = %d\n", st.st_mtime);
+		log_printf("- st_dev (id) = %d\n", st.st_dev);
+		log_printf("- st uid = %d\n", st.st_uid);
+		log_printf("- st gid = %d\n", st.st_gid);
+		log_printf("- st ino = %d\n", st.st_ino);
 		
 		log_printf("\n*** ps3ntfs_seek ***\n");
 		
@@ -192,7 +211,7 @@ int main(void)
 
 	} else log_printf("- ps3ntfs_open = failed - %s\n", temp);
 		
-	sprintf(buffer, "%s:/viper/ntfs_newname.txt", mounts[0].name);
+	sprintf(buffer, "%s:/viper6/ntfs_newname.txt", mounts[0].name);
 	log_printf("\n*** ps3ntfs_rename ***\n");
 	for(k=0; k<5000; k++) { // force
 		ret = ps3ntfs_rename(temp, buffer);
@@ -205,7 +224,7 @@ int main(void)
 	char filename[255];
 	
 	log_printf("\n*** ps3ntfs_diropen ***\n");
-	sprintf(temp, "%s:/viper", mounts[0].name);
+	sprintf(temp, "%s:/viper6", mounts[0].name);
 	
 	for(k=0; k<5000; k++) { // force
 		pdir = ps3ntfs_diropen(temp);
@@ -221,6 +240,9 @@ int main(void)
 			if ((strcmp(filename, ".") == 0) || (strcmp(filename, "..") == 0)) continue;
 			
 			log_printf("- ps3ntfs_dirnext = File : %s/\n", filename);
+			log_printf("- last_access_time = %d\n", st.st_atime);
+			log_printf("- last_mft_change_time = %d\n", st.st_ctime);
+			log_printf("- last_data_change_time = %d\n", st.st_mtime);
 
 		}
 		
@@ -265,6 +287,58 @@ int main(void)
 		else log_printf("- PS3_NTFS_Shutdown(%d) = false\n", k);
 	}
 	
+	/* // Debugging for time related functions in ntfstime.h
+	struct timespec {
+		time_t tv_sec;
+		long tv_nsec;
+	} ;
+
+	struct timespec now;
+	typedef uint64_t u64;
+	typedef u64 sle64;
+	typedef sle64 ntfs_time;
+	
+	//sys_time_sec_t  time_s;
+	//sys_time_nsec_t time_n_s;
+	//sys_time_get_current_time(&time_s, &time_n_s);
+	//now.tv_sec = time_s;
+	//now.tv_nsec = time_n_s;
+	
+	now.tv_sec = time((time_t*)NULL);
+	now.tv_nsec = 0;
+	
+	log_printf("- test now.tv_sec = %d\n", now.tv_sec);
+	log_printf("- test now.tv_nsec = %d\n", now.tv_nsec);
+
+	ntfs_time ntfstime;
+	struct timespec unixtime;
+
+	#define NTFS_TIME_OFFSET ((s64)(369 * 365 + 89) * 24 * 3600 * 10000000)
+
+	s64 units;
+
+	units = (s64)now.tv_sec * 10000000 + NTFS_TIME_OFFSET + now.tv_nsec/100;
+	
+	ntfstime = (cpu_to_sle64(units));
+	
+	log_printf("- timespec2ntfs = %d\n", ntfstime);
+	
+	struct timespec spec;
+	s64 cputime;
+
+	cputime = sle64_to_cpu(ntfstime);
+	spec.tv_sec = (cputime - (NTFS_TIME_OFFSET)) / 10000000;
+	spec.tv_nsec = (cputime - (NTFS_TIME_OFFSET)
+			- (s64)spec.tv_sec*10000000)*100;
+		//force zero nsec for overflowing dates
+	if ((spec.tv_nsec < 0) || (spec.tv_nsec > 999999999))
+		spec.tv_nsec = 0;
+		
+	unixtime = spec;
+	
+	log_printf("- ntfs2timespec = %d\n", unixtime);
+	*/	// End debugging
+
 	/*
 	TODO
 	int ps3ntfs_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_out, int max, int phys);
