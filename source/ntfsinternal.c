@@ -811,9 +811,19 @@ int ntfsStat (ntfs_vd *vd, ntfs_inode *ni, struct stat *st)
 	st->st_uid = vd->uid;
 	st->st_gid = vd->gid;
 	st->st_ino = ni->mft_no;
-	st->st_atime = ni->last_access_time;
-	st->st_ctime = ni->last_mft_change_time;
-	st->st_mtime = ni->last_data_change_time;
+
+	//st->st_atime = ni->last_access_time;
+	//st->st_ctime = ni->last_mft_change_time;
+	//st->st_mtime = ni->last_data_change_time;
+
+	struct timespec ts;
+
+	ts = ntfs2timespec(ni->last_access_time);
+	st->st_atime = ts.tv_sec;
+	ts = ntfs2timespec(ni->last_mft_change_time);
+	st->st_ctime = ts.tv_sec;
+	ts = ntfs2timespec(ni->last_data_change_time);
+	st->st_mtime = ts.tv_sec;
 
 	// Update entry times
 	ntfsUpdateTimes(vd, ni, NTFS_UPDATE_ATIME);
