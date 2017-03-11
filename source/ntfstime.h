@@ -36,6 +36,7 @@
 
 #include "types.h"
 #include <pthread_types.h> // for timespec
+//#include <sys/sys_time.h> // for sys_time_get_current_time
 
 #ifndef PS3_GEKKO
 /*
@@ -115,19 +116,25 @@ static __inline__ ntfs_time timespec2ntfs(struct timespec spec)
 static __inline__ ntfs_time ntfs_current_time(void)
 {
 	struct timespec now;
-
 #if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_SYS_CLOCK_GETTIME)
 	clock_gettime(CLOCK_REALTIME, &now);
 #elif defined(HAVE_GETTIMEOFDAY)
 	struct timeval microseconds;
 
 	gettimeofday(&microseconds, (struct timezone*)NULL);
+
 	now.tv_sec = microseconds.tv_sec;
 	now.tv_nsec = microseconds.tv_usec*1000;
 #else
 	now.tv_sec = time((time_t*)NULL);
 	now.tv_nsec = 0;
+	//sys_time_sec_t  time_s;
+	//sys_time_nsec_t time_n_s;
+	//sys_time_get_current_time(&time_s, &time_n_s);
+	//now.tv_sec = time_s;
+	//now.tv_nsec = time_n_s;
 #endif
+
 	return (timespec2ntfs(now));
 }
 
