@@ -130,8 +130,7 @@ void ntfsRemoveDevice (const char *path)
 	strncpy(name, path, 127);
 	char *s = strstr(name, ":/");
 	if(s != NULL)
-	return;
-	*s = 0;
+		*s = 0;
 
 	// Find and remove the specified device from the devoptab table
 	// NOTE: We do this manually due to a 'bug' in RemoveDevice
