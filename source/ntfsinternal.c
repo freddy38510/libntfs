@@ -129,7 +129,7 @@ void ntfsRemoveDevice (const char *path)
 	// Get the device name from the path
 	strncpy(name, path, 127);
 	char *s = strstr(name, ":/");
-	if(s == NULL)
+	if(s != NULL)
 	return;
 	*s = 0;
 
