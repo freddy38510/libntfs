@@ -688,9 +688,6 @@ void ntfsUnmount (const char *name, bool force)
 	if (!vd)
 		return;
 
-	// Remove the device from the devoptab table
-	ntfsRemoveDevice(name);
-
 	// Deinitialise the volume descriptor
 	ntfsDeinitVolume(vd);
 
@@ -699,6 +696,9 @@ void ntfsUnmount (const char *name, bool force)
 
 	// Free the volume descriptor
 	ntfs_free(vd);
+
+	// Remove the device from the devoptab table
+	ntfsRemoveDevice(name);
 
 	return;
 }
